@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" fill="none">
+  <rect width="640" height="480" rx="32" fill="#F6F4EE"/>
+  <rect x="40" y="40" width="560" height="400" rx="28" fill="#FFFFFF" stroke="#D7D0C2" stroke-width="8"/>
+  <rect x="72" y="76" width="496" height="64" rx="18" fill="#17313E"/>
+  <text x="96" y="118" fill="#F6F4EE" font-size="28" font-family="Segoe UI, PingFang SC, sans-serif">Monday · 今日日程</text>
+  <rect x="72" y="166" width="232" height="230" rx="20" fill="#F4E8CF"/>
+  <rect x="320" y="166" width="248" height="230" rx="20" fill="#E2EEF1"/>
+  <rect x="92" y="196" width="144" height="18" rx="9" fill="#17313E" fill-opacity=".18"/>
+  <rect x="92" y="232" width="176" height="18" rx="9" fill="#17313E" fill-opacity=".72"/>
+  <rect x="92" y="268" width="124" height="18" rx="9" fill="#17313E" fill-opacity=".18"/>
+  <rect x="340" y="198" width="40" height="150" rx="14" fill="#B9D4DB"/>
+  <rect x="392" y="226" width="40" height="122" rx="14" fill="#86A7B3"/>
+  <rect x="444" y="184" width="40" height="164" rx="14" fill="#4D6C79"/>
+  <rect x="496" y="250" width="40" height="98" rx="14" fill="#E39A59"/>
+  <text x="92" y="372" fill="#17313E" font-size="22" font-family="Segoe UI, PingFang SC, sans-serif">List + Week View</text>
+</svg>
