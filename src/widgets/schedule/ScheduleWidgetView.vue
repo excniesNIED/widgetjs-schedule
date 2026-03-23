@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import { useWidget } from '@widget-js/vue3'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ScheduleHeader from './components/ScheduleHeader.vue'
 import ScheduleListView from './components/ScheduleListView.vue'
-import ScheduleWeekView from './components/ScheduleWeekView.vue'
 import { useScheduleNotifications } from './composables/useScheduleNotifications'
 import { useScheduleStore } from './composables/useScheduleStore'
 import { useScheduleView } from './composables/useScheduleView'
+import { nowIsoString } from './model/date'
 import { formatLongDateLabel } from './model/format'
 import { formatOccurrenceTime, getCurrentAndNextOccurrence } from './model/occurrence'
-import { getViewToggleAction } from './model/presentation'
 import { getRecommendedRefreshDelay } from './model/refresh'
-import type { ScheduleViewMode } from './model/types'
 
 const { size } = useWidget({
   useBroadcastEvent: [],
 })
-const now = ref(new Date().toISOString())
+const now = ref(nowIsoString())
 let timer: number | undefined
 
 const {
@@ -27,9 +25,7 @@ const {
 
 const {
   todayActiveOccurrences,
-  weekDays,
   density,
-  getWeekOccurrencesForDay,
 } = useScheduleView(
   sortedEvents,
   settings,
@@ -38,23 +34,6 @@ const {
   size.height,
 )
 
-const activeView = ref<ScheduleViewMode>(settings.value.defaultView)
-
-watch(
-  () => settings.value.defaultView,
-  (value) => {
-    activeView.value = value
-  },
-)
-
-const weekColumns = computed(() =>
-  weekDays.value.map(day => ({
-    date: day,
-    occurrences: getWeekOccurrencesForDay(day),
-  })),
-)
-
-const viewToggleAction = computed(() => getViewToggleAction(activeView.value))
 const visibleTodayOccurrences = computed(() => todayActiveOccurrences.value ?? [])
 const todaySummary = computed(() => getCurrentAndNextOccurrence(visibleTodayOccurrences.value))
 const shouldKeepVisualsActive = computed(() =>
@@ -73,10 +52,6 @@ const headerStatusText = computed(() => {
   return ''
 })
 
-function toggleView() {
-  activeView.value = viewToggleAction.value.nextView
-}
-
 const refreshCheckpoints = computed(() =>
   visibleTodayOccurrences.value.flatMap(occurrence => [
     occurrence.startAt,
@@ -87,7 +62,7 @@ const refreshCheckpoints = computed(() =>
 useScheduleNotifications(sortedEvents, settings, notificationLog, now)
 
 function scheduleTick() {
-  now.value = new Date().toISOString()
+  now.value = nowIsoString()
   const delay = getRecommendedRefreshDelay(
     refreshCheckpoints.value,
     now.value,
@@ -116,25 +91,14 @@ onUnmounted(() => {
       <ScheduleHeader
         :date-label="formatLongDateLabel(now)"
         :status-text="headerStatusText"
-        :toggle-label="viewToggleAction.label"
-        :toggle-icon="viewToggleAction.icon"
-        @toggle-view="toggleView"
       />
 
       <main class="content">
         <ScheduleListView
-          v-if="activeView === 'list'"
           :occurrences="visibleTodayOccurrences"
           :now="now"
           :background-mode="settings.listBackgroundMode"
           :density="density"
-        />
-        <ScheduleWeekView
-          v-else
-          :columns="weekColumns"
-          :density="density"
-          :now="now"
-          :show-timeline="settings.showTimeline"
         />
       </main>
     </section>

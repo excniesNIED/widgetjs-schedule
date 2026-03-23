@@ -6,6 +6,7 @@ import { useScheduleImportExport } from './composables/useScheduleImportExport'
 import { ensureSystemNotificationPermission } from './composables/useScheduleNotifications'
 import { useScheduleStore } from './composables/useScheduleStore'
 import { dayjs } from './model/date'
+import { getDefaultScheduleColors } from './model/defaults'
 import type { ScheduleEventRecord, ScheduleWidgetSettings } from './model/types'
 
 const { widgetParams, save } = useWidget()
@@ -35,6 +36,7 @@ const importError = ref('')
 const fileInput = ref<HTMLInputElement>()
 const editingEvent = ref<ScheduleEventRecord | null>(null)
 const editSectionRef = ref<HTMLElement>()
+const defaultPaletteHint = getDefaultScheduleColors()
 
 async function handleNotificationSettingChange(key: 'notifyOnAlarm' | 'notifyOnStart' | 'notifyOnEnd') {
   const value = settings.value[key]
@@ -118,31 +120,7 @@ function handleEdit(event: ScheduleEventRecord) {
             <div class="row two">
               <label>
                 <span>默认视图</span>
-                <el-radio-group
-                  v-model="settings.defaultView"
-                  @change="updateSettings({ defaultView: settings.defaultView })"
-                >
-                  <el-radio-button value="list">
-                    列表
-                  </el-radio-button>
-                  <el-radio-button value="week">
-                    周视图
-                  </el-radio-button>
-                </el-radio-group>
-              </label>
-              <label>
-                <span>周视图范围</span>
-                <el-radio-group
-                  v-model="settings.weekWindowMode"
-                  @change="updateSettings({ weekWindowMode: settings.weekWindowMode })"
-                >
-                  <el-radio-button value="3events">
-                    3 个日程
-                  </el-radio-button>
-                  <el-radio-button value="3h">
-                    3 小时
-                  </el-radio-button>
-                </el-radio-group>
+                <el-input value="列表" disabled />
               </label>
             </div>
             <div class="row two">
@@ -163,14 +141,10 @@ function handleEdit(event: ScheduleEventRecord) {
                   </el-radio-button>
                 </el-radio-group>
               </label>
-              <label class="switch">
-                <span>显示时间线</span>
-                <el-switch
-                  v-model="settings.showTimeline"
-                  @change="updateSettings({ showTimeline: settings.showTimeline })"
-                />
-              </label>
             </div>
+            <p class="message">
+              当前组件仅保留列表视图；全局主题开关请使用上方 Widget 主题设置。
+            </p>
           </div>
           <div class="sub-section">
             <h3>颜色设置</h3>
@@ -213,6 +187,9 @@ function handleEdit(event: ScheduleEventRecord) {
                 />
               </label>
             </div>
+            <p class="message">
+              当前默认主题色：卡片 {{ defaultPaletteHint.card }}，文字 {{ defaultPaletteHint.text }}。
+            </p>
           </div>
         </section>
 
