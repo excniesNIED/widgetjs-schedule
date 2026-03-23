@@ -1,4 +1,4 @@
-import { dayjs, toLocalTime, toWeekdayNumber } from './date'
+import { dayjs, toIsoString, toLocalTime, toWeekdayNumber } from './date'
 import { normalizeWeeksExpression } from './recurrence'
 import type { ScheduleEventRecord } from './types'
 
@@ -235,10 +235,10 @@ export function collapseIcsToCourseSeries(rawEvents: RawIcsEvent[]): Partial<Sch
       ? recurrenceWeekStart - firstWeek
       : 0
     const canonicalStart = weekAdjustment > 0
-      ? dayjs(first.startAt).subtract(weekAdjustment, 'week').toISOString()
+      ? toIsoString(dayjs(first.startAt).subtract(weekAdjustment, 'week'))
       : first.startAt
     const canonicalEnd = first.endAt && weekAdjustment > 0
-      ? dayjs(first.endAt).subtract(weekAdjustment, 'week').toISOString()
+      ? toIsoString(dayjs(first.endAt).subtract(weekAdjustment, 'week'))
       : first.endAt
 
     return {

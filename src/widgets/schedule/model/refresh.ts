@@ -1,4 +1,4 @@
-import { dayjs } from './date'
+import { dayjs, toIsoString } from './date'
 import type { ScheduleOccurrence, ScheduleWidgetSettings } from './types'
 
 export const REFRESH_DELAYS = {
@@ -24,9 +24,10 @@ export function buildNotificationCheckpoints(
     if (settings.notifyOnAlarm && typeof occurrence.alarmOffsetMinutes === 'number') {
       checkpoints.push({
         key: `${occurrence.occurrenceKey}:alarm`,
-        timestamp: dayjs(occurrence.startAt)
-          .subtract(occurrence.alarmOffsetMinutes, 'minute')
-          .toISOString(),
+        timestamp: toIsoString(
+          dayjs(occurrence.startAt)
+            .subtract(occurrence.alarmOffsetMinutes, 'minute'),
+        ),
         kind: 'alarm',
         occurrence,
       })

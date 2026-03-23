@@ -1,3 +1,4 @@
+import { nowIsoString } from './date'
 import type {
   ScheduleEventRecord,
   ScheduleWidgetSettings,
@@ -45,7 +46,7 @@ function createScheduleId(prefix = 'schedule') {
 export function buildDefaultEvent(
   partial: Partial<ScheduleEventRecord> = {},
 ): ScheduleEventRecord {
-  const now = new Date().toISOString()
+  const now = nowIsoString()
   const defaults = getDefaultScheduleColors()
 
   return {

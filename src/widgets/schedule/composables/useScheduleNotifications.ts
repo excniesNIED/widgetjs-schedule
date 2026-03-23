@@ -1,6 +1,6 @@
 import { NotificationApi } from '@widget-js/core'
 import { onMounted, onUnmounted, type Ref } from 'vue'
-import { dayjs, toLocalTime } from '../model/date'
+import { dayjs, nowIsoString, toIsoString, toLocalTime } from '../model/date'
 import { expandEventsInRange } from '../model/occurrence'
 import { buildNotificationCheckpoints, getRecommendedRefreshDelay } from '../model/refresh'
 import type {
@@ -72,8 +72,8 @@ export function useScheduleNotifications(
   function getTodayOccurrences() {
     return expandEventsInRange({
       events: events.value,
-      rangeStart: dayjs(now.value).startOf('day').toISOString(),
-      rangeEnd: dayjs(now.value).endOf('day').toISOString(),
+      rangeStart: toIsoString(dayjs(now.value).startOf('day')),
+      rangeEnd: toIsoString(dayjs(now.value).endOf('day')),
       now: now.value,
       settings: settings.value,
     })
@@ -129,7 +129,7 @@ export function useScheduleNotifications(
   }
 
   async function scheduleNextCheck() {
-    now.value = new Date().toISOString()
+    now.value = nowIsoString()
     const occurrences = getTodayOccurrences()
     const checkpoints = await checkNotifications(occurrences)
     const delay = getRecommendedRefreshDelay(

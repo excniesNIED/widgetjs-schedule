@@ -1,10 +1,11 @@
 import ICAL from 'ical.js'
+import { toIsoString } from '../model/date'
 import { collapseIcsToCourseSeries, parseValarmOffsetMinutes } from '../model/ics-course'
 import { normalizeEventRecord } from '../model/normalize'
 import type { ScheduleEventRecord } from '../model/types'
 
 function toIsoFromICAL(value: { toJSDate: () => Date } | undefined) {
-  return value?.toJSDate().toISOString()
+  return value ? toIsoString(value.toJSDate()) : undefined
 }
 
 export function parseIcsEvents(content: string): ScheduleEventRecord[] {
@@ -25,7 +26,7 @@ export function parseIcsEvents(content: string): ScheduleEventRecord[] {
         .find(Boolean)
       const exdates = component
         .getAllProperties('exdate')
-        .flatMap((property: any) => property.getValues().map((value: any) => value.toJSDate().toISOString()))
+        .flatMap((property: any) => property.getValues().map((value: any) => toIsoString(value.toJSDate())))
 
       return normalizeEventRecord({
         id: event.uid,

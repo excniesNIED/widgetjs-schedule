@@ -1,5 +1,5 @@
 import { buildDefaultSettings } from './defaults'
-import { dayjs } from './date'
+import { dayjs, toIsoString } from './date'
 import { formatOccurrenceTime, getRepeatLabel } from './format'
 import {
   buildRRule,
@@ -45,14 +45,14 @@ function buildOccurrence(
 
   return {
     eventId: event.id,
-    occurrenceKey: `${event.id}:${start.toISOString()}`,
+    occurrenceKey: `${event.id}:${toIsoString(start)}`,
     title: event.title,
     description: event.description,
     location: event.location,
     teacher: event.teacher,
     sectionText: event.sectionText,
-    startAt: start.toISOString(),
-    endAt: endAt ? end.toISOString() : undefined,
+    startAt: toIsoString(start),
+    endAt: endAt ? toIsoString(end) : undefined,
     timeMode: event.timeMode,
     isOngoing,
     isUpcoming,
@@ -101,9 +101,9 @@ function expandRecurringEvent(
   return rrule
     .between(lookBehindStart.toDate(), dayjs(rangeEnd).toDate(), true)
     .map((date) => {
-      const occurrenceStart = dayjs(date).toISOString()
+      const occurrenceStart = toIsoString(dayjs(date))
       const occurrenceEnd = event.endAt
-        ? dayjs(date).add(durationMs, 'millisecond').toISOString()
+        ? toIsoString(dayjs(date).add(durationMs, 'millisecond'))
         : undefined
 
       if (!matchesWeeksExpression(
