@@ -1,12 +1,15 @@
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   title: string
   description: string
-}>()
+  compact?: boolean
+}>(), {
+  compact: false,
+})
 </script>
 
 <template>
-  <div class="empty-state">
+  <div class="empty-state" :class="{ compact }">
     <strong>{{ title }}</strong>
     <span>{{ description }}</span>
   </div>
@@ -26,13 +29,27 @@ defineProps<{
   background: color-mix(in srgb, var(--widget-background-color) 92%, white);
 }
 
+.empty-state.compact {
+  min-height: 6.2rem;
+  padding: 0.9rem;
+  gap: 0.28rem;
+}
+
 .empty-state strong {
   font-size: 0.95rem;
   font-weight: 700;
 }
 
+.empty-state.compact strong {
+  font-size: 0.9rem;
+}
+
 .empty-state span {
   font-size: 0.82rem;
   line-height: 1.5;
+}
+
+.empty-state.compact span {
+  font-size: 0.78rem;
 }
 </style>

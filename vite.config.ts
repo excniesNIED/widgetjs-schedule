@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import process from 'node:process'
 import vue from '@vitejs/plugin-vue'
 import widget from '@widget-js/vite-plugin-widget'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -8,8 +9,16 @@ import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => {
   const offlineMode = mode === 'offline'
+  const devHost = process.env.WIDGET_DEV_HOST || '127.0.0.1'
+  const devPort = Number(process.env.WIDGET_DEV_PORT || '5173')
+
   return {
     base: offlineMode ? './' : '/',
+    server: {
+      host: devHost,
+      port: devPort,
+      strictPort: true,
+    },
     plugins: [
       vue(),
       widget({

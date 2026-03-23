@@ -27,6 +27,7 @@ defineProps<{
     v-else
     title="今天暂无日程"
     description="去设置页手动添加或导入 CSV / JSON / ICS。"
+    compact
   />
 </template>
 

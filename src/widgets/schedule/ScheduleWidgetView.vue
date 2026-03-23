@@ -8,6 +8,7 @@ import { useScheduleNotifications } from './composables/useScheduleNotifications
 import { useScheduleStore } from './composables/useScheduleStore'
 import { useScheduleView } from './composables/useScheduleView'
 import { formatLongDateLabel } from './model/format'
+import { getViewToggleAction } from './model/presentation'
 import type { ScheduleViewMode } from './model/types'
 
 const { size } = useWidget({
@@ -52,6 +53,12 @@ const weekColumns = computed(() =>
   })),
 )
 
+const viewToggleAction = computed(() => getViewToggleAction(activeView.value))
+
+function toggleView() {
+  activeView.value = viewToggleAction.value.nextView
+}
+
 useScheduleNotifications(sortedEvents, settings, notificationLog, now)
 
 onMounted(() => {
@@ -74,26 +81,11 @@ onUnmounted(() => {
         :date-label="formatLongDateLabel(now)"
         :current="summary.current"
         :next="summary.next"
+        :today-count="todayOccurrences.length"
+        :toggle-label="viewToggleAction.label"
+        :toggle-icon="viewToggleAction.icon"
+        @toggle-view="toggleView"
       />
-
-      <div class="toolbar">
-        <button
-          type="button"
-          class="toggle"
-          :class="{ active: activeView === 'list' }"
-          @click="activeView = 'list'"
-        >
-          今日列表
-        </button>
-        <button
-          type="button"
-          class="toggle"
-          :class="{ active: activeView === 'week' }"
-          @click="activeView = 'week'"
-        >
-          周视图
-        </button>
-      </div>
 
       <main class="content">
         <ScheduleListView
@@ -118,30 +110,11 @@ onUnmounted(() => {
 .schedule-widget {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 0.85rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.72rem;
   color: var(--widget-color);
-}
-
-.toolbar {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.toggle {
-  border: 0;
-  padding: 0.48rem 0.82rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--widget-background-color) 82%, white);
-  color: color-mix(in srgb, var(--widget-color) 84%, transparent);
-  cursor: pointer;
-  font-size: 0.82rem;
-}
-
-.toggle.active {
-  background: var(--widget-color);
-  color: var(--widget-background-color);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .content {

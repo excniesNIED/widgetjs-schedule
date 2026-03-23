@@ -77,182 +77,191 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
     @confirm="save({ closeWindow: true })"
   >
     <template #custom>
-      <section class="config-section">
-        <h3>显示设置</h3>
-        <div class="row two">
-          <label>
-            <span>默认视图</span>
-            <el-radio-group
-              v-model="settings.defaultView"
-              @change="updateSettings({ defaultView: settings.defaultView })"
-            >
-              <el-radio-button label="list">
-                列表
-              </el-radio-button>
-              <el-radio-button label="week">
-                周视图
-              </el-radio-button>
-            </el-radio-group>
-          </label>
-          <label>
-            <span>周视图范围</span>
-            <el-radio-group
-              v-model="settings.weekWindowMode"
-              @change="updateSettings({ weekWindowMode: settings.weekWindowMode })"
-            >
-              <el-radio-button label="3events">
-                3 个日程
-              </el-radio-button>
-              <el-radio-button label="3h">
-                3 小时
-              </el-radio-button>
-            </el-radio-group>
-          </label>
-        </div>
-        <div class="row two">
-          <label>
-            <span>列表背景</span>
-            <el-radio-group
-              v-model="settings.listBackgroundMode"
-              @change="updateSettings({ listBackgroundMode: settings.listBackgroundMode })"
-            >
-              <el-radio-button label="none">
-                无
-              </el-radio-button>
-              <el-radio-button label="countdown">
-                倒计时
-              </el-radio-button>
-              <el-radio-button label="progress">
-                进度
-              </el-radio-button>
-            </el-radio-group>
-          </label>
-          <label class="switch">
-            <span>显示时间线</span>
-            <el-switch
-              v-model="settings.showTimeline"
-              @change="updateSettings({ showTimeline: settings.showTimeline })"
-            />
-          </label>
-        </div>
-      </section>
+      <div class="config-scroll">
+        <section class="config-section">
+          <h3>显示设置</h3>
+          <div class="row two">
+            <label>
+              <span>默认视图</span>
+              <el-radio-group
+                v-model="settings.defaultView"
+                @change="updateSettings({ defaultView: settings.defaultView })"
+              >
+                <el-radio-button value="list">
+                  列表
+                </el-radio-button>
+                <el-radio-button value="week">
+                  周视图
+                </el-radio-button>
+              </el-radio-group>
+            </label>
+            <label>
+              <span>周视图范围</span>
+              <el-radio-group
+                v-model="settings.weekWindowMode"
+                @change="updateSettings({ weekWindowMode: settings.weekWindowMode })"
+              >
+                <el-radio-button value="3events">
+                  3 个日程
+                </el-radio-button>
+                <el-radio-button value="3h">
+                  3 小时
+                </el-radio-button>
+              </el-radio-group>
+            </label>
+          </div>
+          <div class="row two">
+            <label>
+              <span>列表背景</span>
+              <el-radio-group
+                v-model="settings.listBackgroundMode"
+                @change="updateSettings({ listBackgroundMode: settings.listBackgroundMode })"
+              >
+                <el-radio-button value="none">
+                  无
+                </el-radio-button>
+                <el-radio-button value="countdown">
+                  倒计时
+                </el-radio-button>
+                <el-radio-button value="progress">
+                  进度
+                </el-radio-button>
+              </el-radio-group>
+            </label>
+            <label class="switch">
+              <span>显示时间线</span>
+              <el-switch
+                v-model="settings.showTimeline"
+                @change="updateSettings({ showTimeline: settings.showTimeline })"
+              />
+            </label>
+          </div>
+        </section>
 
-      <section class="config-section">
-        <h3>颜色设置</h3>
-        <div class="row three">
-          <label>
-            <span>卡片颜色</span>
-            <el-color-picker
-              v-model="settings.cardColor"
-              @change="updateSettings({ cardColor: settings.cardColor })"
-            />
-          </label>
-          <label>
-            <span>文字颜色</span>
-            <el-color-picker
-              v-model="settings.textColor"
-              @change="updateSettings({ textColor: settings.textColor })"
-            />
-          </label>
-          <label>
-            <span>进度颜色</span>
-            <el-color-picker
-              v-model="settings.progressColor"
-              @change="updateSettings({ progressColor: settings.progressColor })"
-            />
-          </label>
-        </div>
-        <div class="row two">
-          <label>
-            <span>进行中高亮</span>
-            <el-color-picker
-              v-model="settings.ongoingColor"
-              @change="updateSettings({ ongoingColor: settings.ongoingColor })"
-            />
-          </label>
-          <label>
-            <span>即将开始高亮</span>
-            <el-color-picker
-              v-model="settings.upcomingColor"
-              @change="updateSettings({ upcomingColor: settings.upcomingColor })"
-            />
-          </label>
-        </div>
-      </section>
+        <section class="config-section">
+          <h3>颜色设置</h3>
+          <div class="row three">
+            <label>
+              <span>卡片颜色</span>
+              <el-color-picker
+                v-model="settings.cardColor"
+                @change="updateSettings({ cardColor: settings.cardColor })"
+              />
+            </label>
+            <label>
+              <span>文字颜色</span>
+              <el-color-picker
+                v-model="settings.textColor"
+                @change="updateSettings({ textColor: settings.textColor })"
+              />
+            </label>
+            <label>
+              <span>进度颜色</span>
+              <el-color-picker
+                v-model="settings.progressColor"
+                @change="updateSettings({ progressColor: settings.progressColor })"
+              />
+            </label>
+          </div>
+          <div class="row two">
+            <label>
+              <span>进行中高亮</span>
+              <el-color-picker
+                v-model="settings.ongoingColor"
+                @change="updateSettings({ ongoingColor: settings.ongoingColor })"
+              />
+            </label>
+            <label>
+              <span>即将开始高亮</span>
+              <el-color-picker
+                v-model="settings.upcomingColor"
+                @change="updateSettings({ upcomingColor: settings.upcomingColor })"
+              />
+            </label>
+          </div>
+        </section>
 
-      <section class="config-section">
-        <h3>手动添加</h3>
-        <ScheduleManualEntryForm
-          :default-color="settings.cardColor"
-          @submit="handleManualSubmit"
-        />
-      </section>
+        <section class="config-section">
+          <h3>手动添加</h3>
+          <ScheduleManualEntryForm
+            :default-color="settings.cardColor"
+            @submit="handleManualSubmit"
+          />
+        </section>
 
-      <section class="config-section">
-        <h3>导入与导出</h3>
-        <div class="import-actions">
-          <el-button @click="triggerImport">
-            导入 CSV / JSON / ICS
-          </el-button>
-          <el-button @click="exportByType('csv', sortedEvents)">
-            导出 CSV
-          </el-button>
-          <el-button @click="exportByType('json', sortedEvents)">
-            导出 JSON
-          </el-button>
-          <el-button @click="exportByType('ics', sortedEvents)">
-            导出 ICS
-          </el-button>
-        </div>
-        <input
-          ref="fileInput"
-          type="file"
-          accept=".csv,.json,.ics"
-          hidden
-          @change="onFileSelected"
-        >
-        <p v-if="importMessage" class="message success">
-          {{ importMessage }}
-        </p>
-        <p v-if="importError" class="message error">
-          {{ importError }}
-        </p>
-      </section>
-
-      <section class="config-section">
-        <div class="section-head">
-          <h3>已保存事件</h3>
-          <el-button type="danger" plain @click="clearAll">
-            清空全部
-          </el-button>
-        </div>
-        <div
-          v-if="sortedEvents.length > 0"
-          class="saved-list"
-        >
-          <article
-            v-for="event in sortedEvents"
-            :key="event.id"
-            class="saved-item"
-          >
-            <div>
-              <strong>{{ event.title }}</strong>
-              <span>{{ event.startAt.slice(0, 16).replace('T', ' ') }}</span>
-            </div>
-            <el-button text type="danger" @click="removeEvent(event.id)">
-              删除
+        <section class="config-section">
+          <h3>导入与导出</h3>
+          <div class="import-actions">
+            <el-button @click="triggerImport">
+              导入 CSV / JSON / ICS
             </el-button>
-          </article>
-        </div>
-        <p v-else class="message">
-          当前还没有日程数据。
-        </p>
-      </section>
+            <el-button @click="exportByType('csv', sortedEvents)">
+              导出 CSV
+            </el-button>
+            <el-button @click="exportByType('json', sortedEvents)">
+              导出 JSON
+            </el-button>
+            <el-button @click="exportByType('ics', sortedEvents)">
+              导出 ICS
+            </el-button>
+          </div>
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".csv,.json,.ics"
+            hidden
+            @change="onFileSelected"
+          >
+          <p v-if="importMessage" class="message success">
+            {{ importMessage }}
+          </p>
+          <p v-if="importError" class="message error">
+            {{ importError }}
+          </p>
+        </section>
+
+        <section class="config-section">
+          <div class="section-head">
+            <h3>已保存事件</h3>
+            <el-button type="danger" plain @click="clearAll">
+              清空全部
+            </el-button>
+          </div>
+          <div
+            v-if="sortedEvents.length > 0"
+            class="saved-list"
+          >
+            <article
+              v-for="event in sortedEvents"
+              :key="event.id"
+              class="saved-item"
+            >
+              <div>
+                <strong>{{ event.title }}</strong>
+                <span>{{ event.startAt.slice(0, 16).replace('T', ' ') }}</span>
+              </div>
+              <el-button text type="danger" @click="removeEvent(event.id)">
+                删除
+              </el-button>
+            </article>
+          </div>
+          <p v-else class="message">
+            当前还没有日程数据。
+          </p>
+        </section>
+      </div>
     </template>
   </WidgetEditDialog>
 </template>
 
 <style scoped>
+.config-scroll {
+  max-height: min(72vh, 54rem);
+  overflow: auto;
+  padding-right: 0.35rem;
+  overscroll-behavior: contain;
+}
+
 .config-section {
   display: grid;
   gap: 0.9rem;
@@ -338,6 +347,10 @@ label span {
   padding: 0.72rem 0.82rem;
   border-radius: 0.9rem;
   background: #f7f3ea;
+}
+
+:deep(.el-dialog__body) {
+  overflow: hidden;
 }
 
 .saved-item div {
