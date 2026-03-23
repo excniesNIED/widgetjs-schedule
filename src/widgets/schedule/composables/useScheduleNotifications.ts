@@ -1,6 +1,6 @@
 import { NotificationApi } from '@widget-js/core'
 import { onMounted, onUnmounted, type Ref } from 'vue'
-import { dayjs } from '../model/date'
+import { dayjs, toLocalTime } from '../model/date'
 import { expandEventsInRange } from '../model/occurrence'
 import { buildNotificationCheckpoints, getRecommendedRefreshDelay } from '../model/refresh'
 import type {
@@ -10,6 +10,7 @@ import type {
 } from '../model/types'
 
 type NotificationLog = Record<string, true>
+const NOTIFICATION_POLL_INTERVAL = 15 * 1000
 
 export function useScheduleNotifications(
   events: Ref<ScheduleEventRecord[]>,
@@ -44,7 +45,7 @@ export function useScheduleNotifications(
   }
 
   function buildMessage(kind: 'alarm' | 'start' | 'end', occurrence: ScheduleOccurrence) {
-    const timeLabel = occurrence.startAt.slice(11, 16)
+    const timeLabel = toLocalTime(occurrence.startAt)
     const locationLabel = occurrence.location ? ` · ${occurrence.location}` : ''
 
     if (kind === 'alarm') {
@@ -67,8 +68,7 @@ export function useScheduleNotifications(
     }
   }
 
-  async function checkNotifications() {
-    const occurrences = getTodayOccurrences()
+  async function checkNotifications(occurrences: ScheduleOccurrence[]) {
     const checkpoints = buildNotificationCheckpoints(occurrences, settings.value)
     const currentTime = dayjs(now.value)
 
@@ -95,14 +95,24 @@ export function useScheduleNotifications(
 
   async function scheduleNextCheck() {
     now.value = new Date().toISOString()
-    const checkpoints = await checkNotifications()
+    const occurrences = getTodayOccurrences()
+    const checkpoints = await checkNotifications(occurrences)
     const delay = getRecommendedRefreshDelay(
-      checkpoints.map(item => item.timestamp),
+      [
+        ...checkpoints.map(item => item.timestamp),
+        ...occurrences.flatMap(occurrence => [
+          occurrence.startAt,
+          occurrence.endAt,
+        ].filter(Boolean) as string[]),
+      ],
       now.value,
+      {
+        hasOngoing: occurrences.some(item => item.isOngoing),
+      },
     )
     timer = window.setTimeout(() => {
       void scheduleNextCheck()
-    }, delay)
+    }, Math.min(delay, NOTIFICATION_POLL_INTERVAL))
   }
 
   onMounted(() => {

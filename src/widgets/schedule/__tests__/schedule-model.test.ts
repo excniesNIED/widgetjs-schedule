@@ -4,6 +4,7 @@ import {
   buildDefaultEvent,
   buildDefaultSettings,
 } from '../model/defaults'
+import { toLocalDate } from '../model/date'
 import {
   expandEventsInRange,
   getCurrentAndNextOccurrence,
@@ -59,7 +60,7 @@ describe('schedule occurrence model', () => {
     })
 
     expect(occurrences).toHaveLength(5)
-    expect(occurrences.map(item => item.startAt.slice(0, 10))).toEqual([
+    expect(occurrences.map(item => toLocalDate(item.startAt))).toEqual([
       '2026-03-23',
       '2026-03-24',
       '2026-03-25',
@@ -141,7 +142,7 @@ describe('schedule occurrence model', () => {
       settings: buildDefaultSettings(),
     })
 
-    expect(occurrences.map(item => item.startAt.slice(0, 10))).toEqual([
+    expect(occurrences.map(item => toLocalDate(item.startAt))).toEqual([
       '2026-05-04',
       '2026-05-11',
       '2026-05-18',

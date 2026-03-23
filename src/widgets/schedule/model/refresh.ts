@@ -3,7 +3,7 @@ import type { ScheduleOccurrence, ScheduleWidgetSettings } from './types'
 
 export const REFRESH_DELAYS = {
   default: 10 * 60 * 1000,
-  near: 60 * 1000,
+  near: 30 * 1000,
   imminent: 10 * 1000,
 } as const
 
@@ -59,19 +59,28 @@ export function buildNotificationCheckpoints(
 export function getRecommendedRefreshDelay(
   checkpoints: Array<string | Date>,
   now: string,
+  options?: {
+    hasOngoing?: boolean
+    keepActive?: boolean
+  },
 ) {
   const current = dayjs(now)
+  const shouldStayActive = Boolean(options?.hasOngoing || options?.keepActive)
   const nextDiffMs = checkpoints
     .map(item => dayjs(item).diff(current, 'millisecond'))
     .filter(value => value > 0)
     .sort((left, right) => left - right)[0]
 
   if (typeof nextDiffMs !== 'number') {
-    return REFRESH_DELAYS.default
+    return shouldStayActive ? REFRESH_DELAYS.near : REFRESH_DELAYS.default
   }
 
   if (nextDiffMs < 60 * 1000) {
     return REFRESH_DELAYS.imminent
+  }
+
+  if (shouldStayActive) {
+    return REFRESH_DELAYS.near
   }
 
   if (nextDiffMs < 10 * 60 * 1000) {

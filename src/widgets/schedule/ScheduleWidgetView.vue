@@ -54,13 +54,18 @@ const weekColumns = computed(() =>
 )
 
 const viewToggleAction = computed(() => getViewToggleAction(activeView.value))
+const visibleTodayOccurrences = computed(() => todayActiveOccurrences.value ?? [])
+const shouldKeepVisualsActive = computed(() =>
+  settings.value.listBackgroundMode !== 'none'
+  && visibleTodayOccurrences.value.length > 0,
+)
 
 function toggleView() {
   activeView.value = viewToggleAction.value.nextView
 }
 
 const refreshCheckpoints = computed(() =>
-  todayActiveOccurrences.value.flatMap(occurrence => [
+  visibleTodayOccurrences.value.flatMap(occurrence => [
     occurrence.startAt,
     occurrence.endAt,
   ].filter(Boolean) as string[]),
@@ -70,7 +75,14 @@ useScheduleNotifications(sortedEvents, settings, notificationLog, now)
 
 function scheduleTick() {
   now.value = new Date().toISOString()
-  const delay = getRecommendedRefreshDelay(refreshCheckpoints.value, now.value)
+  const delay = getRecommendedRefreshDelay(
+    refreshCheckpoints.value,
+    now.value,
+    {
+      hasOngoing: visibleTodayOccurrences.value.some(item => item.isOngoing),
+      keepActive: shouldKeepVisualsActive.value,
+    },
+  )
   timer = window.setTimeout(scheduleTick, delay)
 }
 
@@ -90,7 +102,7 @@ onUnmounted(() => {
     <section class="schedule-widget" :class="density">
       <ScheduleHeader
         :date-label="formatLongDateLabel(now)"
-        :today-count="todayActiveOccurrences.length"
+        :today-count="visibleTodayOccurrences.length"
         :toggle-label="viewToggleAction.label"
         :toggle-icon="viewToggleAction.icon"
         @toggle-view="toggleView"
@@ -99,9 +111,10 @@ onUnmounted(() => {
       <main class="content">
         <ScheduleListView
           v-if="activeView === 'list'"
-          :occurrences="todayActiveOccurrences"
+          :occurrences="visibleTodayOccurrences"
           :now="now"
           :background-mode="settings.listBackgroundMode"
+          :density="density"
         />
         <ScheduleWeekView
           v-else

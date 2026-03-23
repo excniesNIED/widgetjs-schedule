@@ -48,7 +48,7 @@ describe('schedule notification helpers', () => {
     expect(delay).toBe(REFRESH_DELAYS.default)
   })
 
-  it('uses 1 minute when the next checkpoint is within 10 minutes', () => {
+  it('uses 30 seconds when the next checkpoint is within 10 minutes', () => {
     const delay = getRecommendedRefreshDelay([
       '2026-03-23T10:08:00+08:00',
     ], '2026-03-23T10:00:00+08:00')
@@ -62,5 +62,21 @@ describe('schedule notification helpers', () => {
     ], '2026-03-23T10:00:00+08:00')
 
     expect(delay).toBe(REFRESH_DELAYS.imminent)
+  })
+
+  it('keeps a warm refresh cadence while an event is ongoing', () => {
+    const delay = getRecommendedRefreshDelay([], '2026-03-23T10:00:00+08:00', {
+      hasOngoing: true,
+    })
+
+    expect(delay).toBe(REFRESH_DELAYS.near)
+  })
+
+  it('keeps countdown and progress visuals updating when there are active list items', () => {
+    const delay = getRecommendedRefreshDelay([], '2026-03-23T10:00:00+08:00', {
+      keepActive: true,
+    })
+
+    expect(delay).toBe(REFRESH_DELAYS.near)
   })
 })

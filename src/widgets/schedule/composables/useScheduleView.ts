@@ -1,17 +1,46 @@
 import { computed, type Ref } from 'vue'
-import { dayjs } from '../model/date'
+import { dayjs, toLocalDate } from '../model/date'
 import {
   expandEventsInRange,
 } from '../model/occurrence'
 import { groupOccurrencesByDate } from '../model/format'
 import type {
   ScheduleEventRecord,
+  ScheduleOccurrence,
   ScheduleWidgetSettings,
 } from '../model/types'
 
 function buildWeekDays(now: string) {
   const start = dayjs(now).startOf('isoWeek')
   return Array.from({ length: 7 }, (_, index) => start.add(index, 'day').toISOString())
+}
+
+function getWindowedOccurrences(
+  day: string,
+  occurrences: ScheduleOccurrence[],
+  now: string,
+  limit: number,
+) {
+  if (occurrences.length === 0) {
+    return []
+  }
+
+  const isCurrentDay = toLocalDate(day) === toLocalDate(now)
+  const base = isCurrentDay
+    ? dayjs(now)
+    : dayjs(occurrences[0]?.startAt ?? day)
+  const windowEnd = base.add(3, 'hour')
+  const filtered = occurrences.filter((occurrence) => {
+    const start = dayjs(occurrence.startAt)
+    const end = occurrence.endAt ? dayjs(occurrence.endAt) : start
+    return occurrence.isOngoing || end.isAfter(base) && start.isBefore(windowEnd)
+  })
+
+  if (filtered.length > 0) {
+    return filtered.slice(0, limit)
+  }
+
+  return occurrences.slice(0, limit)
 }
 
 export function useScheduleView(
@@ -51,11 +80,11 @@ export function useScheduleView(
   )
 
   const todayActiveOccurrences = computed(() =>
-    todayOccurrences.value.filter(occurrence => !occurrence.isPast),
+    (todayOccurrences.value ?? []).filter(occurrence => !occurrence.isPast),
   )
   const weekDays = computed(() => buildWeekDays(now.value))
   const groupedWeekOccurrences = computed(() =>
-    groupOccurrencesByDate(weekOccurrences.value),
+    groupOccurrencesByDate(weekOccurrences.value ?? []),
   )
 
   const density = computed<'compact' | 'standard' | 'large'>(() => {
@@ -71,25 +100,15 @@ export function useScheduleView(
   })
 
   function getWeekOccurrencesForDay(day: string) {
-    const key = day.slice(0, 10)
+    const key = toLocalDate(day)
     const occurrences = groupedWeekOccurrences.value[key] ?? []
+    const limit = density.value === 'compact' ? 2 : 3
 
     if (settings.value.weekWindowMode === '3events') {
-      return occurrences.slice(0, density.value === 'compact' ? 2 : 3)
+      return occurrences.slice(0, limit)
     }
 
-    const windowStart = dayjs(now.value)
-    const windowEnd = windowStart.add(3, 'hour')
-    const filtered = occurrences.filter((occurrence) => {
-      const start = dayjs(occurrence.startAt)
-      return occurrence.isOngoing || (start.isAfter(windowStart) && start.isBefore(windowEnd))
-    })
-
-    if (filtered.length > 0) {
-      return filtered.slice(0, density.value === 'compact' ? 2 : 3)
-    }
-
-    return occurrences.slice(0, density.value === 'compact' ? 2 : 3)
+    return getWindowedOccurrences(day, occurrences, now.value, limit)
   }
 
   return {

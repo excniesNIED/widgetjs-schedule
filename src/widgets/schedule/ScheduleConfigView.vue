@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import ScheduleManualEntryForm from './components/ScheduleManualEntryForm.vue'
 import { useScheduleImportExport } from './composables/useScheduleImportExport'
 import { useScheduleStore } from './composables/useScheduleStore'
+import { dayjs } from './model/date'
 import type { ScheduleEventRecord } from './model/types'
 
 const { widgetParams, save } = useWidget()
@@ -281,7 +282,7 @@ function handleEdit(event: ScheduleEventRecord) {
           >
             <div>
               <strong>{{ event.title }}</strong>
-              <span>{{ event.startAt.slice(0, 16).replace('T', ' ') }}</span>
+              <span>{{ dayjs(event.startAt).format('YYYY-MM-DD HH:mm') }}</span>
             </div>
             <div class="saved-actions">
               <el-button text @click="handleEdit(event)">

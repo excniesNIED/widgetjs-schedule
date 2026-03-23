@@ -17,7 +17,7 @@ const emit = defineEmits<{
   cancelEdit: []
 }>()
 
-const today = new Date().toISOString().slice(0, 10)
+const today = dayjs().format('YYYY-MM-DD')
 const recurrenceOptions: Array<{ label: string, value: ScheduleRecurrenceType }> = [
   { label: '单次', value: 'none' },
   { label: '每天', value: 'daily' },
