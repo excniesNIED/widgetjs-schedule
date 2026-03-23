@@ -119,4 +119,69 @@ describe('schedule occurrence model', () => {
     expect(summary.current?.title).toBe('正在进行')
     expect(summary.next?.title).toBe('接下来')
   })
+
+  it('expands imported course series from the canonical academic week start', () => {
+    const event = buildEvent({
+      title: '算法设计与分析',
+      timeMode: 'range',
+      startAt: '2026-05-04T10:10:00+08:00',
+      endAt: '2026-05-04T11:45:00+08:00',
+      recurrenceType: 'weekly',
+      recurrenceInterval: 1,
+      recurrenceWeekdays: [1],
+      recurrenceWeeks: '9-16',
+      recurrenceWeekStart: 9,
+    })
+
+    const occurrences = expandEventsInRange({
+      events: [event],
+      rangeStart: '2026-05-04T00:00:00+08:00',
+      rangeEnd: '2026-05-25T23:59:59+08:00',
+      now: '2026-05-11T08:00:00+08:00',
+      settings: buildDefaultSettings(),
+    })
+
+    expect(occurrences.map(item => item.startAt.slice(0, 10))).toEqual([
+      '2026-05-04',
+      '2026-05-11',
+      '2026-05-18',
+      '2026-05-25',
+    ])
+  })
+
+  it('can filter out past occurrences from today display', () => {
+    const events = [
+      buildEvent({
+        title: '已经结束',
+        timeMode: 'range',
+        startAt: '2026-03-23T08:00:00+08:00',
+        endAt: '2026-03-23T08:30:00+08:00',
+      }),
+      buildEvent({
+        title: '正在进行',
+        timeMode: 'range',
+        startAt: '2026-03-23T10:00:00+08:00',
+        endAt: '2026-03-23T11:00:00+08:00',
+      }),
+      buildEvent({
+        title: '接下来',
+        timeMode: 'range',
+        startAt: '2026-03-23T11:30:00+08:00',
+        endAt: '2026-03-23T12:00:00+08:00',
+      }),
+    ]
+
+    const occurrences = expandEventsInRange({
+      events,
+      rangeStart: '2026-03-23T00:00:00+08:00',
+      rangeEnd: '2026-03-23T23:59:59+08:00',
+      now: '2026-03-23T10:10:00+08:00',
+      settings: buildDefaultSettings(),
+    })
+
+    const visibleToday = occurrences.filter(item => !item.isPast)
+
+    expect(visibleToday).toHaveLength(2)
+    expect(visibleToday.map(item => item.title)).toEqual(['正在进行', '接下来'])
+  })
 })

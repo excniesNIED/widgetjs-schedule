@@ -47,12 +47,15 @@ function buildOccurrence(
     title: event.title,
     description: event.description,
     location: event.location,
+    teacher: event.teacher,
+    sectionText: event.sectionText,
     startAt: start.toISOString(),
     endAt: endAt ? end.toISOString() : undefined,
     timeMode: event.timeMode,
     isOngoing,
     isUpcoming,
     isPast,
+    alarmOffsetMinutes: event.alarmOffsetMinutes,
     repeatLabel: getRepeatLabel(event),
     colorToken: event.color ?? fallbackColors.cardColor,
     progressColorToken: event.progressColor ?? fallbackColors.progressColor,
@@ -101,7 +104,12 @@ function expandRecurringEvent(
         ? dayjs(date).add(durationMs, 'millisecond').toISOString()
         : undefined
 
-      if (!matchesWeeksExpression(event.startAt, occurrenceStart, event.recurrenceWeeks)) {
+      if (!matchesWeeksExpression(
+        event.startAt,
+        occurrenceStart,
+        event.recurrenceWeeks,
+        event.recurrenceWeekStart,
+      )) {
         return undefined
       }
 

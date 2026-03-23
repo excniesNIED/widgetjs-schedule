@@ -2,12 +2,14 @@ import { NotificationApi } from '@widget-js/core'
 import { onMounted, onUnmounted, type Ref } from 'vue'
 import { dayjs } from '../model/date'
 import { expandEventsInRange } from '../model/occurrence'
+import { buildNotificationCheckpoints, getRecommendedRefreshDelay } from '../model/refresh'
 import type {
   ScheduleEventRecord,
+  ScheduleOccurrence,
   ScheduleWidgetSettings,
 } from '../model/types'
 
-type NotificationLog = Record<string, { started?: boolean, ended?: boolean }>
+type NotificationLog = Record<string, true>
 
 export function useScheduleNotifications(
   events: Ref<ScheduleEventRecord[]>,
@@ -31,55 +33,85 @@ export function useScheduleNotifications(
     }
   }
 
-  async function checkNotifications() {
-    const occurrences = expandEventsInRange({
+  function getTodayOccurrences() {
+    return expandEventsInRange({
       events: events.value,
-      rangeStart: dayjs(now.value).subtract(1, 'day').toISOString(),
-      rangeEnd: dayjs(now.value).add(1, 'day').toISOString(),
+      rangeStart: dayjs(now.value).startOf('day').toISOString(),
+      rangeEnd: dayjs(now.value).endOf('day').toISOString(),
       now: now.value,
       settings: settings.value,
-    })
-    const currentTime = dayjs(now.value)
+    }).filter(occurrence => !occurrence.isPast)
+  }
 
-    for (const occurrence of occurrences) {
-      const start = dayjs(occurrence.startAt)
-      const end = occurrence.endAt ? dayjs(occurrence.endAt) : undefined
-      const log = notificationLog.value[occurrence.occurrenceKey] ?? {}
+  function buildMessage(kind: 'alarm' | 'start' | 'end', occurrence: ScheduleOccurrence) {
+    const timeLabel = occurrence.startAt.slice(11, 16)
+    const locationLabel = occurrence.location ? ` · ${occurrence.location}` : ''
 
-      if (!log.started && currentTime.diff(start, 'second') >= 0 && currentTime.diff(start, 'second') <= 15) {
-        await sendNotification('日程开始', `${occurrence.title} · ${occurrence.startAt.slice(11, 16)}`)
-        log.started = true
+    if (kind === 'alarm') {
+      return {
+        title: '日程提醒',
+        message: `${occurrence.title} 将于 ${timeLabel} 开始${locationLabel}`,
       }
+    }
 
-      if (
-        end
-        && !log.ended
-        && currentTime.diff(end, 'second') >= 0
-        && currentTime.diff(end, 'second') <= 15
-      ) {
-        await sendNotification('日程结束', `${occurrence.title} 已结束`)
-        log.ended = true
+    if (kind === 'start') {
+      return {
+        title: '日程开始',
+        message: `${occurrence.title} · ${timeLabel}${locationLabel}`,
       }
+    }
 
-      if (log.started || log.ended) {
-        notificationLog.value = {
-          ...notificationLog.value,
-          [occurrence.occurrenceKey]: log,
-        }
-      }
+    return {
+      title: '日程结束',
+      message: `${occurrence.title} 已结束`,
     }
   }
 
+  async function checkNotifications() {
+    const occurrences = getTodayOccurrences()
+    const checkpoints = buildNotificationCheckpoints(occurrences, settings.value)
+    const currentTime = dayjs(now.value)
+
+    for (const checkpoint of checkpoints) {
+      if (notificationLog.value[checkpoint.key]) {
+        continue
+      }
+
+      const diffSeconds = currentTime.diff(dayjs(checkpoint.timestamp), 'second')
+      if (diffSeconds < 0 || diffSeconds > 15) {
+        continue
+      }
+
+      const payload = buildMessage(checkpoint.kind, checkpoint.occurrence)
+      await sendNotification(payload.title, payload.message)
+      notificationLog.value = {
+        ...notificationLog.value,
+        [checkpoint.key]: true,
+      }
+    }
+
+    return checkpoints
+  }
+
+  async function scheduleNextCheck() {
+    now.value = new Date().toISOString()
+    const checkpoints = await checkNotifications()
+    const delay = getRecommendedRefreshDelay(
+      checkpoints.map(item => item.timestamp),
+      now.value,
+    )
+    timer = window.setTimeout(() => {
+      void scheduleNextCheck()
+    }, delay)
+  }
+
   onMounted(() => {
-    timer = window.setInterval(() => {
-      void checkNotifications()
-    }, 15_000)
-    void checkNotifications()
+    void scheduleNextCheck()
   })
 
   onUnmounted(() => {
     if (timer) {
-      window.clearInterval(timer)
+      window.clearTimeout(timer)
     }
   })
 }

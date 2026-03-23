@@ -7,7 +7,7 @@ import type {
   ScheduleWidgetSettings,
 } from '../model/types'
 
-type NotificationLog = Record<string, { started?: boolean, ended?: boolean }>
+type NotificationLog = Record<string, true>
 
 export function useScheduleStore() {
   const events = useStorage<ScheduleEventRecord[]>(

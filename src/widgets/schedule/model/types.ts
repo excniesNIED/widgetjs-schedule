@@ -28,16 +28,20 @@ export interface ScheduleEventRecord {
   title: string
   description?: string
   location?: string
+  teacher?: string
+  sectionText?: string
   source: ScheduleSource
   timeMode: ScheduleTimeMode
   startAt: string
   endAt?: string
   timezone?: string
   allDay?: boolean
+  alarmOffsetMinutes?: number
   recurrenceType: ScheduleRecurrenceType
   recurrenceInterval?: number
   recurrenceWeekdays?: number[]
   recurrenceWeeks?: string
+  recurrenceWeekStart?: number
   recurrenceRRule?: string
   exdates?: string[]
   color?: string
@@ -52,12 +56,15 @@ export interface ScheduleOccurrence {
   title: string
   description?: string
   location?: string
+  teacher?: string
+  sectionText?: string
   startAt: string
   endAt?: string
   timeMode: ScheduleTimeMode
   isOngoing: boolean
   isUpcoming: boolean
   isPast: boolean
+  alarmOffsetMinutes?: number
   repeatLabel: string
   colorToken: string
   progressColorToken: string
@@ -69,6 +76,9 @@ export interface ScheduleWidgetSettings {
   weekWindowMode: ScheduleWeekWindowMode
   listBackgroundMode: ScheduleListBackgroundMode
   showTimeline: boolean
+  notifyOnAlarm: boolean
+  notifyOnStart: boolean
+  notifyOnEnd: boolean
   cardColor: string
   textColor: string
   progressColor: string

@@ -86,16 +86,21 @@ function getEventWeekdays(event: ScheduleEventRecord) {
   return [toWeekdayNumber(event.startAt)]
 }
 
-export function getAcademicWeekNumber(baseStart: string, occurrenceStart: string) {
+export function getAcademicWeekNumber(
+  baseStart: string,
+  occurrenceStart: string,
+  baseWeekNumber = 1,
+) {
   const base = toDayjs(baseStart).startOf('isoWeek')
   const current = toDayjs(occurrenceStart).startOf('isoWeek')
-  return current.diff(base, 'week') + 1
+  return current.diff(base, 'week') + baseWeekNumber
 }
 
 export function matchesWeeksExpression(
   baseStart: string,
   occurrenceStart: string,
   weeks?: string,
+  baseWeekNumber = 1,
 ) {
   if (!weeks) {
     return true
@@ -106,7 +111,7 @@ export function matchesWeeksExpression(
     return true
   }
 
-  const weekNumber = getAcademicWeekNumber(baseStart, occurrenceStart)
+  const weekNumber = getAcademicWeekNumber(baseStart, occurrenceStart, baseWeekNumber)
   if (weekNumber < 1) {
     return false
   }

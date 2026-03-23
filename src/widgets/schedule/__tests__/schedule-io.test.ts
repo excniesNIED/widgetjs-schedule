@@ -90,4 +90,80 @@ describe('schedule import export', () => {
     expect(serialized).toContain('BEGIN:VEVENT')
     expect(serialized).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO')
   })
+
+  it('collapses repeated course vevents into one weekly course series', () => {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Schedule Test//EN',
+      'BEGIN:VEVENT',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      'TRIGGER:-PT10M',
+      'END:VALARM',
+      'UID:event-os-w10-a',
+      'SUMMARY:操作系统',
+      'DESCRIPTION:地点: 文渊楼C座355 | 教师: 洪潇 | 周数: 1-16周 | 节次: 5-6节',
+      'LOCATION:文渊楼C座355',
+      'DTSTART:20260511T060000Z',
+      'DTEND:20260511T073500Z',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      'TRIGGER:-PT10M',
+      'END:VALARM',
+      'UID:event-os-w11-b',
+      'SUMMARY:操作系统',
+      'DESCRIPTION:地点: 文渊楼C座355 | 教师: 洪潇 | 周数: 1-16周 | 节次: 5-6节',
+      'LOCATION:文渊楼C座355',
+      'DTSTART:20260518T060000Z',
+      'DTEND:20260518T073500Z',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n')
+
+    const events = parseIcsEvents(ics)
+
+    expect(events).toHaveLength(1)
+    expect(events[0]?.title).toBe('操作系统')
+    expect(events[0]?.recurrenceType).toBe('weekly')
+    expect(events[0]?.recurrenceWeeks).toBe('1-16')
+    expect(events[0]?.recurrenceWeekStart).toBe(1)
+    expect(events[0]?.teacher).toBe('洪潇')
+    expect(events[0]?.sectionText).toBe('5-6节')
+    expect(events[0]?.alarmOffsetMinutes).toBe(10)
+    expect(events[0]?.description).toContain('教师：洪潇')
+  })
+
+  it('keeps academic week anchor when imported course starts from later weeks', () => {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Schedule Test//EN',
+      'BEGIN:VEVENT',
+      'UID:event-algo-w10-a',
+      'SUMMARY:算法设计与分析',
+      'DESCRIPTION:地点: 文渊楼C座129 | 教师: 杜萍 | 周数: 9-16周 | 节次: 3-4节',
+      'LOCATION:文渊楼C座129',
+      'DTSTART:20260511T021000Z',
+      'DTEND:20260511T034500Z',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'UID:event-algo-w11-b',
+      'SUMMARY:算法设计与分析',
+      'DESCRIPTION:地点: 文渊楼C座129 | 教师: 杜萍 | 周数: 9-16周 | 节次: 3-4节',
+      'LOCATION:文渊楼C座129',
+      'DTSTART:20260518T021000Z',
+      'DTEND:20260518T034500Z',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n')
+
+    const events = parseIcsEvents(ics)
+
+    expect(events).toHaveLength(1)
+    expect(events[0]?.recurrenceWeeks).toBe('9-16')
+    expect(events[0]?.recurrenceWeekStart).toBe(9)
+  })
 })

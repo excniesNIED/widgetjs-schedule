@@ -22,16 +22,24 @@ export function normalizeEventRecord(
     timeMode: input.timeMode ?? (input.endAt ? 'range' : 'point'),
     startAt: toIsoString(input.startAt ?? base.startAt),
     endAt: input.endAt ? toIsoString(input.endAt) : undefined,
+    alarmOffsetMinutes: typeof input.alarmOffsetMinutes === 'number'
+      ? input.alarmOffsetMinutes
+      : undefined,
     recurrenceType: input.recurrenceType ?? 'none',
     recurrenceInterval: input.recurrenceInterval && input.recurrenceInterval > 0
       ? input.recurrenceInterval
       : 1,
     recurrenceWeekdays: normalizedWeekdays.length > 0 ? normalizedWeekdays : undefined,
     recurrenceWeeks: input.recurrenceWeeks?.trim() || undefined,
+    recurrenceWeekStart: input.recurrenceWeekStart && input.recurrenceWeekStart > 0
+      ? input.recurrenceWeekStart
+      : undefined,
     recurrenceRRule: input.recurrenceRRule?.trim() || undefined,
     exdates: input.exdates?.map(item => toIsoString(item)),
     description: input.description?.trim() || undefined,
     location: input.location?.trim() || undefined,
+    teacher: input.teacher?.trim() || undefined,
+    sectionText: input.sectionText?.trim() || undefined,
     color: input.color ?? base.color,
     progressColor: input.progressColor ?? base.progressColor,
     createdAt: input.createdAt ? toIsoString(input.createdAt) : base.createdAt,
