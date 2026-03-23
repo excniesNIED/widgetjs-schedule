@@ -10,13 +10,29 @@ export const SCHEDULE_STORAGE_KEYS = {
   notificationLog: 'schedule.notification.log',
 } as const
 
-export const DEFAULT_SCHEDULE_COLORS = {
+const LIGHT_SCHEDULE_COLORS = {
   card: '#eadfc8',
   text: '#17313e',
   progress: '#d78842',
   ongoing: '#ce6a4b',
   upcoming: '#4b7a87',
 } as const
+
+const DARK_SCHEDULE_COLORS = {
+  card: '#55646b',
+  text: '#f3f6f7',
+  progress: '#8fc7ff',
+  ongoing: '#ff9a7a',
+  upcoming: '#7bc6d6',
+} as const
+
+function prefersDarkMode() {
+  return Boolean(globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches)
+}
+
+export function getDefaultScheduleColors() {
+  return prefersDarkMode() ? DARK_SCHEDULE_COLORS : LIGHT_SCHEDULE_COLORS
+}
 
 function createScheduleId(prefix = 'schedule') {
   if (globalThis.crypto?.randomUUID) {
@@ -30,6 +46,7 @@ export function buildDefaultEvent(
   partial: Partial<ScheduleEventRecord> = {},
 ): ScheduleEventRecord {
   const now = new Date().toISOString()
+  const defaults = getDefaultScheduleColors()
 
   return {
     id: createScheduleId('event'),
@@ -41,13 +58,14 @@ export function buildDefaultEvent(
     recurrenceInterval: 1,
     createdAt: now,
     updatedAt: now,
-    color: DEFAULT_SCHEDULE_COLORS.card,
-    progressColor: DEFAULT_SCHEDULE_COLORS.progress,
+    color: defaults.card,
+    progressColor: defaults.progress,
     ...partial,
   }
 }
 
 export function buildDefaultSettings(): ScheduleWidgetSettings {
+  const defaults = getDefaultScheduleColors()
   return {
     defaultView: 'list',
     weekWindowMode: '3events',
@@ -56,10 +74,10 @@ export function buildDefaultSettings(): ScheduleWidgetSettings {
     notifyOnAlarm: true,
     notifyOnStart: true,
     notifyOnEnd: false,
-    cardColor: DEFAULT_SCHEDULE_COLORS.card,
-    textColor: DEFAULT_SCHEDULE_COLORS.text,
-    progressColor: DEFAULT_SCHEDULE_COLORS.progress,
-    ongoingColor: DEFAULT_SCHEDULE_COLORS.ongoing,
-    upcomingColor: DEFAULT_SCHEDULE_COLORS.upcoming,
+    cardColor: defaults.card,
+    textColor: defaults.text,
+    progressColor: defaults.progress,
+    ongoingColor: defaults.ongoing,
+    upcomingColor: defaults.upcoming,
   }
 }

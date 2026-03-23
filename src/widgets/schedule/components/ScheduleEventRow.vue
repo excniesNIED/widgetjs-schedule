@@ -5,6 +5,7 @@ import {
   formatOccurrenceTime,
   formatRelativeCountdown,
 } from '../model/format'
+import { getReadableTextColor } from '../model/color'
 import type {
   ScheduleListBackgroundMode,
   ScheduleOccurrence,
@@ -60,6 +61,7 @@ const statusText = computed(() => {
 const metaText = computed(() =>
   props.occurrence.description || props.occurrence.location || '',
 )
+const textColor = computed(() => getReadableTextColor(props.occurrence.colorToken))
 </script>
 
 <template>
@@ -72,6 +74,7 @@ const metaText = computed(() =>
     }"
     :style="{
       background: `linear-gradient(135deg, ${occurrence.colorToken}, rgba(255,255,255,0.88))`,
+      '--event-text-color': textColor,
     }"
   >
     <div
@@ -117,7 +120,7 @@ const metaText = computed(() =>
   z-index: 1;
   display: grid;
   gap: 0.32rem;
-  padding: 0.78rem 0.84rem;
+  padding: 0.68rem 0.74rem;
 }
 
 .time-line,
@@ -130,15 +133,15 @@ const metaText = computed(() =>
 
 .time-line strong,
 .title-line strong {
-  color: var(--widget-color);
+  color: var(--event-text-color);
 }
 
 .time-line span,
 .title-line span,
 p {
   margin: 0;
-  font-size: 0.78rem;
-  color: color-mix(in srgb, var(--widget-color) 70%, transparent);
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--event-text-color) 72%, transparent);
 }
 
 .title-line span {
@@ -146,7 +149,7 @@ p {
 }
 
 .title-line strong {
-  font-size: 0.92rem;
+  font-size: 0.84rem;
   line-height: 1.35;
 }
 

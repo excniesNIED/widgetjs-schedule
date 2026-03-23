@@ -26,8 +26,8 @@ withDefaults(defineProps<{
   </div>
   <ScheduleEmptyState
     v-else
-    title=""
-    description="去设置页添加或导入日程。"
+    title="今天暂无日程"
+    description="去添加或导入日程。"
     compact
   />
 </template>

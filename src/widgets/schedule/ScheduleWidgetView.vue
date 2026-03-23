@@ -8,6 +8,7 @@ import { useScheduleNotifications } from './composables/useScheduleNotifications
 import { useScheduleStore } from './composables/useScheduleStore'
 import { useScheduleView } from './composables/useScheduleView'
 import { formatLongDateLabel } from './model/format'
+import { formatOccurrenceTime, getCurrentAndNextOccurrence } from './model/occurrence'
 import { getViewToggleAction } from './model/presentation'
 import { getRecommendedRefreshDelay } from './model/refresh'
 import type { ScheduleViewMode } from './model/types'
@@ -55,10 +56,22 @@ const weekColumns = computed(() =>
 
 const viewToggleAction = computed(() => getViewToggleAction(activeView.value))
 const visibleTodayOccurrences = computed(() => todayActiveOccurrences.value ?? [])
+const todaySummary = computed(() => getCurrentAndNextOccurrence(visibleTodayOccurrences.value))
 const shouldKeepVisualsActive = computed(() =>
   settings.value.listBackgroundMode !== 'none'
   && visibleTodayOccurrences.value.length > 0,
 )
+const headerStatusText = computed(() => {
+  if (todaySummary.value.current) {
+    return `进行中 · ${todaySummary.value.current.title} · ${formatOccurrenceTime(todaySummary.value.current)}`
+  }
+
+  if (todaySummary.value.next) {
+    return `接下来 · ${formatOccurrenceTime(todaySummary.value.next)} · ${todaySummary.value.next.title}`
+  }
+
+  return ''
+})
 
 function toggleView() {
   activeView.value = viewToggleAction.value.nextView
@@ -102,7 +115,7 @@ onUnmounted(() => {
     <section class="schedule-widget" :class="density">
       <ScheduleHeader
         :date-label="formatLongDateLabel(now)"
-        :today-count="visibleTodayOccurrences.length"
+        :status-text="headerStatusText"
         :toggle-label="viewToggleAction.label"
         :toggle-icon="viewToggleAction.icon"
         @toggle-view="toggleView"
@@ -133,9 +146,9 @@ onUnmounted(() => {
   height: 100%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.72rem;
+  gap: 0.56rem;
   box-sizing: border-box;
-  padding: calc(var(--widget-padding, 12px) * 0.9);
+  padding: calc(var(--widget-padding, 12px) * 0.74) calc(var(--widget-padding, 12px) * 0.86) calc(var(--widget-padding, 12px) * 0.82);
   color: var(--widget-color);
   user-select: none;
   -webkit-user-select: none;

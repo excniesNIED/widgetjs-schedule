@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   dateLabel: string
-  todayCount: number
+  statusText?: string
   toggleLabel: string
   toggleIcon: 'calendar' | 'list'
 }>()
@@ -16,6 +16,9 @@ defineEmits<{
     <div class="headline">
       <div>
         <h1>{{ dateLabel }}</h1>
+        <p v-if="statusText" class="status-text">
+          {{ statusText }}
+        </p>
       </div>
       <button
         type="button"
@@ -62,10 +65,17 @@ defineEmits<{
 
 h1 {
   margin: 0;
-  font-size: 1.02rem;
+  font-size: 0.98rem;
   font-weight: 700;
   color: var(--widget-color);
   line-height: 1.15;
+}
+
+.status-text {
+  margin: 0.18rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--widget-color) 68%, transparent);
 }
 
 .view-toggle {
@@ -73,8 +83,8 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.2rem;
+  height: 2.2rem;
   border: 0;
   border-radius: 999px;
   cursor: pointer;
@@ -104,6 +114,10 @@ h1 {
 @media (max-width: 560px) {
   h1 {
     font-size: 0.96rem;
+  }
+
+  .status-text {
+    font-size: 0.72rem;
   }
 }
 </style>
