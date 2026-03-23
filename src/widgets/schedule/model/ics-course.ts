@@ -123,6 +123,7 @@ export function parseIcsDescription(raw?: string): ParsedIcsDescription {
   }
 
   const description = [
+    location ? `地点：${location}` : '',
     teacher ? `教师：${teacher}` : '',
     sectionText ? `节次：${sectionText}` : '',
     ...extras,

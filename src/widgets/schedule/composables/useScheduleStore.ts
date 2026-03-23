@@ -1,6 +1,8 @@
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
+import { dayjs } from '../model/date'
 import { buildDefaultSettings, SCHEDULE_STORAGE_KEYS } from '../model/defaults'
+import { mergeImportedEvents } from '../model/import'
 import { normalizeEventRecord } from '../model/normalize'
 import type {
   ScheduleEventRecord,
@@ -39,13 +41,7 @@ export function useScheduleStore() {
   }
 
   function importEvents(importedEvents: ScheduleEventRecord[]) {
-    const normalized = importedEvents.map(event => normalizeEventRecord(event, event.source))
-    const existing = new Map(events.value.map(event => [event.id, event]))
-    for (const event of normalized) {
-      existing.set(event.id, event)
-    }
-    events.value = Array.from(existing.values())
-      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+    events.value = mergeImportedEvents(events.value, importedEvents)
   }
 
   function clearAll() {
@@ -61,7 +57,7 @@ export function useScheduleStore() {
   }
 
   const sortedEvents = computed(() =>
-    [...events.value].sort((left, right) => left.startAt.localeCompare(right.startAt)),
+    [...events.value].sort((left, right) => dayjs(left.startAt).valueOf() - dayjs(right.startAt).valueOf()),
   )
 
   return {
