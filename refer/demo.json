@@ -1,0 +1,27 @@
+[
+  {
+    "title": "高等数学",
+    "source": "json",
+    "timeMode": "range",
+    "startAt": "2026-03-23T08:20:00+08:00",
+    "endAt": "2026-03-23T09:55:00+08:00",
+    "recurrenceType": "weekly",
+    "recurrenceInterval": 1,
+    "recurrenceWeekdays": [1, 3, 5],
+    "recurrenceWeeks": "1-16",
+    "description": "1-16周，理科楼A302",
+    "location": "理科楼A302",
+    "color": "#dbeafe"
+  },
+  {
+    "title": "午休提醒",
+    "source": "json",
+    "timeMode": "point",
+    "startAt": "2026-03-23T12:30:00+08:00",
+    "recurrenceType": "daily",
+    "recurrenceInterval": 1,
+    "description": "固定午休提醒",
+    "location": "宿舍",
+    "color": "#fef3c7"
+  }
+]

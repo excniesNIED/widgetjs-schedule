@@ -1,0 +1,4 @@
+title,date,start_time,end_time,repeat_type,repeat_interval,weekdays,weeks,description,location,color
+高等数学,2026-03-23,08:20,09:55,weekly,1,"1,3,5","1-16","1-16周，理科楼A302","理科楼A302","#dbeafe"
+午休提醒,2026-03-23,12:30,,daily,1,,,"固定午休提醒","宿舍","#fef3c7"
+项目站会,2026-03-24,10:00,10:30,weekdays,1,"1,2,3,4,5",,"工作日例会","腾讯会议","#dcfce7"
