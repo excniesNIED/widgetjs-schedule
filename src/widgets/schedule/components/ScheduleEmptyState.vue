@@ -20,18 +20,22 @@ withDefaults(defineProps<{
 .empty-state {
   display: grid;
   gap: 0.4rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   place-items: center;
-  min-height: 8rem;
-  padding: 1rem;
+  min-height: 100%;
+  padding: 1.1rem;
   text-align: center;
   color: color-mix(in srgb, var(--widget-color) 78%, transparent);
   border: 1px dashed color-mix(in srgb, var(--widget-color) 18%, transparent);
   border-radius: calc(var(--widget-border-radius, 20px) * 0.7);
-  background: color-mix(in srgb, var(--widget-background-color) 92%, white);
+  background: color-mix(in srgb, var(--widget-background-color) 78%, rgba(0,0,0,0.12));
+  overflow: hidden;
 }
 
 .empty-state.compact {
-  min-height: 6.2rem;
+  min-height: 100%;
   padding: 0.9rem;
   gap: 0.28rem;
 }

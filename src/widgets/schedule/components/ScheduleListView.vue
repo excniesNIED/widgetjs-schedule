@@ -35,11 +35,14 @@ withDefaults(defineProps<{
 <style scoped>
 .list-view {
   display: grid;
-  gap: 0.68rem;
+  gap: 0.5rem;
+  align-content: start;
+  width: 100%;
+  min-width: 0;
 }
 
 .list-view.compact {
-  gap: 0.48rem;
+  gap: 0.38rem;
 }
 
 .list-view.large {

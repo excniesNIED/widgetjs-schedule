@@ -10,6 +10,7 @@ import { getDefaultScheduleColors } from './model/defaults'
 import type { ScheduleEventRecord, ScheduleWidgetSettings } from './model/types'
 
 const { widgetParams, save } = useWidget()
+const activeTab = ref('theme')
 const widgetConfigOption = new WidgetConfigOption({
   title: 'Schedule 设置',
   theme: {
@@ -37,6 +38,7 @@ const fileInput = ref<HTMLInputElement>()
 const editingEvent = ref<ScheduleEventRecord | null>(null)
 const editSectionRef = ref<HTMLElement>()
 const defaultPaletteHint = getDefaultScheduleColors()
+const useGlobalTheme = ref(true)
 
 async function handleNotificationSettingChange(key: 'notifyOnAlarm' | 'notifyOnStart' | 'notifyOnEnd') {
   const value = settings.value[key]
@@ -113,197 +115,219 @@ function handleEdit(event: ScheduleEventRecord) {
   >
     <template #custom>
       <div class="config-scroll">
-        <section class="config-section">
-          <h2>主题设置</h2>
-          <div class="sub-section">
-            <h3>组件设置</h3>
-            <div class="row two">
-              <label>
-                <span>默认视图</span>
-                <el-input value="列表" disabled />
-              </label>
+        <el-tabs v-model="activeTab" type="border-card" class="config-tabs">
+          <!-- 主题设置 Tab -->
+          <el-tab-pane label="主题设置" name="theme">
+            <div class="config-section">
+              <div class="sub-section">
+                <h3>组件设置</h3>
+                <div class="grid-8x8">
+                  <label class="grid-item">
+                    <span>默认视图</span>
+                    <el-input value="列表 / 周视图" disabled />
+                  </label>
+                  <label class="grid-item">
+                    <span>周视图范围</span>
+                    <el-input value="3 个日程 / 3 小时" disabled />
+                  </label>
+                  <label>
+                    <span>列表背景</span>
+                    <el-radio-group
+                      v-model="settings.listBackgroundMode"
+                      @change="updateSettings({ listBackgroundMode: settings.listBackgroundMode })"
+                    >
+                      <el-radio-button value="none">
+                        无
+                      </el-radio-button>
+                      <el-radio-button value="countdown">
+                        倒计时
+                      </el-radio-button>
+                      <el-radio-button value="progress">
+                        进度
+                      </el-radio-button>
+                    </el-radio-group>
+                  </label>
+                  <label class="switch">
+                    <span>显示时间线</span>
+                    <el-switch v-model="settings.showTimeline" disabled />
+                  </label>
+                  <label class="switch">
+                    <span>使用全局主题</span>
+                    <el-switch v-model="useGlobalTheme" disabled />
+                  </label>
+                </div>
+              </div>
+
+              <div class="sub-section">
+                <h3>颜色设置</h3>
+                <div class="grid-8x8">
+                  <label class="grid-item">
+                    <span>卡片颜色</span>
+                    <el-color-picker
+                      v-model="settings.cardColor"
+                      @change="updateSettings({ cardColor: settings.cardColor })"
+                    />
+                  </label>
+                  <label class="grid-item">
+                    <span>文字颜色</span>
+                    <el-color-picker
+                      v-model="settings.textColor"
+                      @change="updateSettings({ textColor: settings.textColor })"
+                    />
+                  </label>
+                  <label class="grid-item">
+                    <span>进度颜色</span>
+                    <el-color-picker
+                      v-model="settings.progressColor"
+                      @change="updateSettings({ progressColor: settings.progressColor })"
+                    />
+                  </label>
+                  <label class="grid-item">
+                    <span>进行中高亮</span>
+                    <el-color-picker
+                      v-model="settings.ongoingColor"
+                      @change="updateSettings({ ongoingColor: settings.ongoingColor })"
+                    />
+                  </label>
+                  <label class="grid-item">
+                    <span>即将开始高亮</span>
+                    <el-color-picker
+                      v-model="settings.upcomingColor"
+                      @change="updateSettings({ upcomingColor: settings.upcomingColor })"
+                    />
+                  </label>
+                </div>
+                <p class="message">
+                  当前默认主题色：卡片 {{ defaultPaletteHint.card }}，文字 {{ defaultPaletteHint.text }}。
+                </p>
+              </div>
             </div>
-            <div class="row two">
-              <label>
-                <span>列表背景</span>
-                <el-radio-group
-                  v-model="settings.listBackgroundMode"
-                  @change="updateSettings({ listBackgroundMode: settings.listBackgroundMode })"
+          </el-tab-pane>
+
+          <!-- 通知设置 Tab -->
+          <el-tab-pane label="通知设置" name="notifications">
+            <div class="config-section">
+              <div class="sub-section">
+                <div class="grid-8x8">
+                  <label class="grid-item switch">
+                    <span>提醒通知</span>
+                    <el-switch
+                      v-model="settings.notifyOnAlarm"
+                      @change="handleNotificationSettingChange('notifyOnAlarm')"
+                    />
+                  </label>
+                  <label class="grid-item switch">
+                    <span>开始通知</span>
+                    <el-switch
+                      v-model="settings.notifyOnStart"
+                      @change="handleNotificationSettingChange('notifyOnStart')"
+                    />
+                  </label>
+                  <label class="grid-item switch">
+                    <span>结束通知</span>
+                    <el-switch
+                      v-model="settings.notifyOnEnd"
+                      @change="handleNotificationSettingChange('notifyOnEnd')"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
+
+          <!-- 日程设置 Tab -->
+          <el-tab-pane label="日程设置" name="schedule">
+            <div class="config-section">
+              <div ref="editSectionRef" class="sub-section">
+                <h3>手动添加与编辑</h3>
+                <strong class="sub-title">手动添加</strong>
+                <ScheduleManualEntryForm
+                  :default-color="settings.cardColor"
+                  :editing-event="editingEvent"
+                  @submit="handleManualSubmit"
+                  @cancel-edit="editingEvent = null"
+                />
+              </div>
+
+              <div class="sub-section">
+                <h3>导入与导出</h3>
+                <div class="import-actions">
+                  <el-button @click="triggerImport">
+                    导入 CSV / JSON / ICS
+                  </el-button>
+                  <el-button @click="exportByType('csv', sortedEvents)">
+                    导出 CSV
+                  </el-button>
+                  <el-button @click="exportByType('json', sortedEvents)">
+                    导出 JSON
+                  </el-button>
+                  <el-button @click="exportByType('ics', sortedEvents)">
+                    导出 ICS
+                  </el-button>
+                  <el-button plain @click="downloadExample('csv')">
+                    下载示例 CSV
+                  </el-button>
+                  <el-button plain @click="downloadExample('json')">
+                    下载示例 JSON
+                  </el-button>
+                </div>
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept=".csv,.json,.ics"
+                  hidden
+                  @change="onFileSelected"
                 >
-                  <el-radio-button value="none">
-                    无
-                  </el-radio-button>
-                  <el-radio-button value="countdown">
-                    倒计时
-                  </el-radio-button>
-                  <el-radio-button value="progress">
-                    进度
-                  </el-radio-button>
-                </el-radio-group>
-              </label>
+                <p v-if="importMessage" class="message success">
+                  {{ importMessage }}
+                </p>
+                <p v-if="importError" class="message error">
+                  {{ importError }}
+                </p>
+              </div>
             </div>
-            <p class="message">
-              当前组件仅保留列表视图；全局主题开关请使用上方 Widget 主题设置。
-            </p>
-          </div>
-          <div class="sub-section">
-            <h3>颜色设置</h3>
-            <div class="row three">
-              <label>
-                <span>卡片颜色</span>
-                <el-color-picker
-                  v-model="settings.cardColor"
-                  @change="updateSettings({ cardColor: settings.cardColor })"
-                />
-              </label>
-              <label>
-                <span>文字颜色</span>
-                <el-color-picker
-                  v-model="settings.textColor"
-                  @change="updateSettings({ textColor: settings.textColor })"
-                />
-              </label>
-              <label>
-                <span>进度颜色</span>
-                <el-color-picker
-                  v-model="settings.progressColor"
-                  @change="updateSettings({ progressColor: settings.progressColor })"
-                />
-              </label>
-            </div>
-            <div class="row two">
-              <label>
-                <span>进行中高亮</span>
-                <el-color-picker
-                  v-model="settings.ongoingColor"
-                  @change="updateSettings({ ongoingColor: settings.ongoingColor })"
-                />
-              </label>
-              <label>
-                <span>即将开始高亮</span>
-                <el-color-picker
-                  v-model="settings.upcomingColor"
-                  @change="updateSettings({ upcomingColor: settings.upcomingColor })"
-                />
-              </label>
-            </div>
-            <p class="message">
-              当前默认主题色：卡片 {{ defaultPaletteHint.card }}，文字 {{ defaultPaletteHint.text }}。
-            </p>
-          </div>
-        </section>
+          </el-tab-pane>
 
-        <section class="config-section">
-          <h2>日程设置</h2>
-          <div class="sub-section">
-            <h3>通知设置</h3>
-            <div class="row three">
-              <label class="switch">
-                <span>提醒通知</span>
-                <el-switch
-                  v-model="settings.notifyOnAlarm"
-                  @change="handleNotificationSettingChange('notifyOnAlarm')"
-                />
-              </label>
-              <label class="switch">
-                <span>开始通知</span>
-                <el-switch
-                  v-model="settings.notifyOnStart"
-                  @change="handleNotificationSettingChange('notifyOnStart')"
-                />
-              </label>
-              <label class="switch">
-                <span>结束通知</span>
-                <el-switch
-                  v-model="settings.notifyOnEnd"
-                  @change="handleNotificationSettingChange('notifyOnEnd')"
-                />
-              </label>
-            </div>
-          </div>
-
-          <div ref="editSectionRef" class="sub-section">
-            <h3>手动添加与编辑</h3>
-            <ScheduleManualEntryForm
-              :default-color="settings.cardColor"
-              :editing-event="editingEvent"
-              @submit="handleManualSubmit"
-              @cancel-edit="editingEvent = null"
-            />
-          </div>
-
-          <div class="sub-section">
-            <h3>导入与导出</h3>
-            <div class="import-actions">
-              <el-button @click="triggerImport">
-                导入 CSV / JSON / ICS
-              </el-button>
-              <el-button @click="exportByType('csv', sortedEvents)">
-                导出 CSV
-              </el-button>
-              <el-button @click="exportByType('json', sortedEvents)">
-                导出 JSON
-              </el-button>
-              <el-button @click="exportByType('ics', sortedEvents)">
-                导出 ICS
-              </el-button>
-              <el-button plain @click="downloadExample('csv')">
-                下载示例 CSV
-              </el-button>
-              <el-button plain @click="downloadExample('json')">
-                下载示例 JSON
-              </el-button>
-            </div>
-            <input
-              ref="fileInput"
-              type="file"
-              accept=".csv,.json,.ics"
-              hidden
-              @change="onFileSelected"
-            >
-            <p v-if="importMessage" class="message success">
-              {{ importMessage }}
-            </p>
-            <p v-if="importError" class="message error">
-              {{ importError }}
-            </p>
-          </div>
-
-          <div class="sub-section">
-            <div class="section-head">
-              <h3>已保存事件</h3>
-              <el-button type="danger" plain @click="clearAll">
-                清空全部
-              </el-button>
-            </div>
-            <div
-              v-if="sortedEvents.length > 0"
-              class="saved-list"
-            >
-              <article
-                v-for="event in sortedEvents"
-                :key="event.id"
-                class="saved-item"
-              >
-                <div>
-                  <strong>{{ event.title }}</strong>
-                  <span>{{ dayjs(event.startAt).format('YYYY-MM-DD HH:mm') }}</span>
-                </div>
-                <div class="saved-actions">
-                  <el-button text @click="handleEdit(event)">
-                    编辑
-                  </el-button>
-                  <el-button text type="danger" @click="removeEvent(event.id)">
-                    删除
+          <!-- 已保存事件 Tab -->
+          <el-tab-pane label="已保存事件" name="saved">
+            <div class="config-section">
+              <div class="sub-section">
+                <div class="section-head">
+                  <h3>已保存事件</h3>
+                  <el-button type="danger" plain @click="clearAll">
+                    清空全部
                   </el-button>
                 </div>
-              </article>
+                <div
+                  v-if="sortedEvents.length > 0"
+                  class="saved-list"
+                >
+                  <article
+                    v-for="event in sortedEvents"
+                    :key="event.id"
+                    class="saved-item"
+                  >
+                    <div class="saved-item-content">
+                      <strong>{{ event.title }}</strong>
+                      <span>{{ dayjs(event.startAt).format('YYYY-MM-DD HH:mm') }}</span>
+                    </div>
+                    <div class="saved-actions">
+                      <el-button text @click="handleEdit(event)">
+                        编辑
+                      </el-button>
+                      <el-button text type="danger" @click="removeEvent(event.id)">
+                        删除
+                      </el-button>
+                    </div>
+                  </article>
+                </div>
+                <p v-else class="message">
+                  当前还没有日程数据。
+                </p>
+              </div>
             </div>
-            <p v-else class="message">
-              当前还没有日程数据。
-            </p>
-          </div>
-        </section>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </template>
   </WidgetEditDialog>
@@ -317,26 +341,26 @@ function handleEdit(event: ScheduleEventRecord) {
   overscroll-behavior: contain;
 }
 
+.config-tabs {
+  border: none;
+}
+
+:deep(.el-tabs__content) {
+  padding: 0;
+}
+
+:deep(.el-tabs__item) {
+  font-size: 0.9rem;
+  height: 36px;
+  line-height: 36px;
+}
+
+:deep(.el-tabs__header) {
+  margin-bottom: 0;
+}
+
 .config-section {
-  display: grid;
-  gap: 0.9rem;
-  padding: 0.4rem 0 1rem;
-}
-
-.config-section + .config-section {
-  border-top: 1px solid #e6e2d7;
-}
-
-.config-section h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: #243744;
-}
-
-.config-section h2 {
-  margin: 0;
-  font-size: 1.06rem;
-  color: #243744;
+  padding: 0.6rem 0;
 }
 
 .sub-section {
@@ -349,27 +373,54 @@ function handleEdit(event: ScheduleEventRecord) {
   border-top: 1px solid #ebe6dc;
 }
 
-.row {
+.sub-section h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #243744;
+  font-weight: 500;
+}
+
+.sub-title {
+  font-size: 0.92rem;
+  color: #243744;
+}
+
+/* 8x8 网格布局系统 */
+.grid-8x8 {
   display: grid;
-  gap: 0.9rem;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.6rem;
 }
 
-.row.two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
-.row.three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.grid-item.span-2 {
+  grid-column: span 2;
 }
 
-label {
-  display: grid;
+.grid-item.span-3 {
+  grid-column: span 3;
+}
+
+.grid-item.span-4 {
+  grid-column: span 4;
+}
+
+/* 颜色选择器网格布局 */
+.grid-8x8 label {
+  display: flex;
+  flex-direction: column;
   gap: 0.38rem;
 }
 
-label span {
+.grid-8x8 label span {
   font-size: 0.82rem;
   color: #405160;
+  white-space: nowrap;
 }
 
 .switch {
@@ -403,10 +454,17 @@ label span {
   align-items: center;
 }
 
+.section-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #243744;
+  font-weight: 500;
+}
+
 .saved-list {
   display: grid;
   gap: 0.6rem;
-  max-height: 16rem;
+  max-height: 20rem;
   overflow: auto;
 }
 
@@ -416,17 +474,23 @@ label span {
   gap: 0.8rem;
   align-items: center;
   padding: 0.72rem 0.82rem;
-  border-radius: 0.9rem;
+  border-radius: 0.5rem;
   background: #f7f3ea;
 }
 
-:deep(.el-dialog__body) {
-  overflow: hidden;
-}
-
-.saved-item div {
+.saved-item-content {
   display: grid;
   gap: 0.2rem;
+}
+
+.saved-item-content strong {
+  color: #243744;
+  font-size: 0.88rem;
+}
+
+.saved-item-content span {
+  font-size: 0.78rem;
+  color: #6c7b84;
 }
 
 .saved-actions {
@@ -435,19 +499,20 @@ label span {
   gap: 0.3rem;
 }
 
-.saved-item strong {
-  color: #243744;
+:deep(.el-dialog__body) {
+  overflow: hidden;
 }
 
-.saved-item span {
-  font-size: 0.78rem;
-  color: #6c7b84;
-}
-
+/* 响应式布局 */
 @media (max-width: 760px) {
-  .row.two,
-  .row.three {
-    grid-template-columns: 1fr;
+  .grid-8x8 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grid-item.span-2,
+  .grid-item.span-3,
+  .grid-item.span-4 {
+    grid-column: span 2;
   }
 
   .section-head,
@@ -458,6 +523,23 @@ label span {
 
   .saved-actions {
     justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-8x8 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-item.span-2,
+  .grid-item.span-3,
+  .grid-item.span-4 {
+    grid-column: span 1;
+  }
+
+  :deep(.el-tabs__item) {
+    font-size: 0.8rem;
+    padding: 0 0.8rem;
   }
 }
 </style>

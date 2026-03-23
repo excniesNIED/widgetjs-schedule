@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useWidget } from '@widget-js/vue3'
+import { DeployMode } from '@widget-js/core'
+import { useWidget, WidgetBackground } from '@widget-js/vue3'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ScheduleHeader from './components/ScheduleHeader.vue'
 import ScheduleListView from './components/ScheduleListView.vue'
@@ -11,7 +12,7 @@ import { formatLongDateLabel } from './model/format'
 import { formatOccurrenceTime, getCurrentAndNextOccurrence } from './model/occurrence'
 import { getRecommendedRefreshDelay } from './model/refresh'
 
-const { size } = useWidget({
+const { size, widgetParams } = useWidget({
   useBroadcastEvent: [],
 })
 const now = ref(nowIsoString())
@@ -51,6 +52,9 @@ const headerStatusText = computed(() => {
 
   return ''
 })
+const wrapperComponent = computed(() =>
+  widgetParams.mode === DeployMode.OVERLAP ? 'OverlapWidgetWrapper' : 'DesktopWidgetWrapper',
+)
 
 const refreshCheckpoints = computed(() =>
   visibleTodayOccurrences.value.flatMap(occurrence => [
@@ -86,46 +90,92 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <widget-wrapper>
-    <section class="schedule-widget" :class="density">
-      <ScheduleHeader
-        :date-label="formatLongDateLabel(now)"
-        :status-text="headerStatusText"
-      />
+  <component :is="wrapperComponent">
+    <div class="widget-shell">
+      <WidgetBackground class="background-layer" />
+      <section class="schedule-widget" :class="density">
+        <div class="content-panel">
+          <ScheduleHeader
+            :date-label="formatLongDateLabel(now)"
+            :status-text="headerStatusText"
+          />
 
-      <main class="content">
-        <ScheduleListView
-          :occurrences="visibleTodayOccurrences"
-          :now="now"
-          :background-mode="settings.listBackgroundMode"
-          :density="density"
-        />
-      </main>
-    </section>
-  </widget-wrapper>
+          <main class="content">
+            <ScheduleListView
+              :occurrences="visibleTodayOccurrences"
+              :now="now"
+              :background-mode="settings.listBackgroundMode"
+              :density="density"
+            />
+          </main>
+        </div>
+      </section>
+    </div>
+  </component>
 </template>
 
 <style scoped>
+.widget-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.background-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
 .schedule-widget {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   height: 100%;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.56rem;
+  place-items: stretch;
   box-sizing: border-box;
-  padding: calc(var(--widget-padding, 12px) * 0.74) calc(var(--widget-padding, 12px) * 0.86) calc(var(--widget-padding, 12px) * 0.82);
+  padding: 16px;
   color: var(--widget-color);
   user-select: none;
   -webkit-user-select: none;
   overflow: hidden;
 }
 
-.content {
+.content-panel {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
   min-height: 0;
-  overflow: auto;
-  padding-right: 0.18rem;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--widget-background-color) 92%, rgba(255,255,255,0.06));
+  border: 1px solid color-mix(in srgb, var(--widget-color) 10%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+  overflow: hidden;
 }
 
-.compact .content {
-  overflow: hidden;
+.content {
+  min-height: 0;
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+.compact .content-panel {
+  padding: 8px;
+  gap: 8px;
+}
+
+.large .content-panel {
+  padding: 24px;
 }
 </style>

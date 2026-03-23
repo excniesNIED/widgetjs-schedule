@@ -49,6 +49,594 @@
       "supportDeployMode": 17,
       "configPagePath": "/widget/config/schedule?frame=true&transparent=false&width=760&height=720",
       "routes": []
+    },
+    {
+      "name": "cn.excnies.widget.schedule.todo_list",
+      "title": {
+        "zh-CN": "待办事项（Pro）",
+        "en-US": "To-Do"
+      },
+      "description": {
+        "zh-CN": "带数据同步功能的待办事项",
+        "en-US": "To-Do list with data synchronization"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 3,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/todo_list",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_todo_list.png",
+      "categories": [
+        "productivity",
+        "utilities"
+      ],
+      "supportDeployMode": 273,
+      "synchronizable": true,
+      "configPagePath": "/widget/todo_list/config?frame=true&transparent=false&width=600&height=500",
+      "routes": []
+    },
+    {
+      "name": "itime.fun.pomodoro",
+      "title": {
+        "zh-CN": "番茄钟",
+        "en-US": "Pomodoro Timer"
+      },
+      "description": {
+        "zh-CN": "高效管理时间，提高专注力",
+        "en-US": " Help you focus on any tasks"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 1,
+      "height": 1,
+      "maxWidth": 1,
+      "webviewTag": false,
+      "maxHeight": 1,
+      "minWidth": 1,
+      "minHeight": 1,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/pomodoro",
+      "meta": {},
+      "backgroundThrottling": false,
+      "previewImage": "/images/preview_pomodoro.png",
+      "categories": [
+        "productivity"
+      ],
+      "supportDeployMode": 65536,
+      "requiredAppVersion": "24.6.2",
+      "synchronizable": true,
+      "configPagePath": "/settings?frame=true&transparent=false&width=400&height=700",
+      "routes": [],
+      "browserWindowOptions": {
+        "transparent": false,
+        "frame": false,
+        "backgroundMaterial": "acrylic",
+        "backgroundThrottling": false
+      }
+    },
+    {
+      "name": "cn.excnies.widget.schedule.deadline",
+      "title": {
+        "zh-CN": "Deadline",
+        "en-US": "Deadline"
+      },
+      "description": {
+        "zh-CN": "最后期限进度条",
+        "en-US": "Deadline countdown progress bar"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 2,
+      "maxWidth": 4,
+      "webviewTag": false,
+      "maxHeight": 2,
+      "minWidth": 4,
+      "minHeight": 2,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/deadline",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_deadline.png",
+      "categories": [
+        "fun",
+        "countdown",
+        "time"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/deadline?width=400&height=700&frame=true&transparent=false",
+      "routes": []
+    },
+    {
+      "name": "cn.excnies.widget.schedule.countdown_list",
+      "title": {
+        "zh-CN": "倒计时列表",
+        "en-US": "Countdown List"
+      },
+      "description": {
+        "zh-CN": "自动排序的倒计时列表",
+        "en-US": "Automatically sorted countdown list"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 3,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/countdown/list",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_countdown_list.png",
+      "categories": [
+        "time",
+        "countdown"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/countdown/list?frame=true&transparent=false&width=600&height=400",
+      "routes": []
+    },
+    {
+      "name": "itime.fun.calendar",
+      "title": {
+        "zh-CN": "日历",
+        "en-US": "Calendar"
+      },
+      "description": {
+        "zh-CN": "简单的日历，支持节假日显示",
+        "en-US": "Simple calendar with holiday display"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/calendar",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_calendar.png",
+      "categories": [
+        "calendar"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/calendar?frame=true&transparent=false",
+      "routes": []
+    },
+    {
+      "name": "itime.fun.countdown",
+      "title": {
+        "zh-CN": "倒计时",
+        "en-US": "Countdown"
+      },
+      "description": {
+        "zh-CN": "日历样式的倒计时组件",
+        "en-US": "Countdown widget with calendar style"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 2,
+      "height": 2,
+      "maxWidth": 4,
+      "webviewTag": false,
+      "maxHeight": 4,
+      "minWidth": 2,
+      "minHeight": 2,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/countdown",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_countdown.png",
+      "categories": [
+        "time",
+        "countdown"
+      ],
+      "supportDeployMode": 17,
+      "synchronizable": true,
+      "configPagePath": "/?frame=true&transparent=false&width=400&height=700&tab=countdown",
+      "routes": []
+    },
+    {
+      "name": "itime.fun.calendar_large",
+      "title": {
+        "zh-CN": "大号日历"
+      },
+      "description": {
+        "zh-CN": "大尺寸日历，方便用户对整月日程进行安排"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 8,
+      "height": 8,
+      "maxWidth": 12,
+      "webviewTag": false,
+      "maxHeight": 12,
+      "minWidth": 8,
+      "minHeight": 8,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/calendar_large",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_calendar_large.png",
+      "categories": [
+        "calendar"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/calendar_large?width=600&height=500&frame=true&transparent=false",
+      "routes": []
+    },
+    {
+      "name": "cn.excnies.widget.schedule.birthday_list",
+      "title": {
+        "zh-CN": "生日列表",
+        "en-US": "Birthday List"
+      },
+      "description": {
+        "zh-CN": "自动倒计时的生日列表",
+        "en-US": "Birthday list with countdown"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 4,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 3,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/birthday_list",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_birthday_list.png",
+      "categories": [
+        "time",
+        "countdown"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/birthday_list?frame=true&transparent=false&width=600&height=400",
+      "routes": []
+    },
+    {
+      "name": "cn.excnies.widget.schedule.tou_tiao",
+      "title": {
+        "zh-CN": "头条热榜"
+      },
+      "description": {
+        "zh-CN": "今日头条热度榜单"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/tou_tiao",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_toutiao.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": []
+    },
+    {
+      "name": "cn.excnies.widget.schedule.cls_telegraph",
+      "title": {
+        "zh-CN": "财联社电报"
+      },
+      "description": {
+        "zh-CN": "每5分钟刷新一次"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/cls_telegraph",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_cls_telegraph.png",
+      "categories": [
+        "finance",
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": []
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.douyin",
+      "title": {
+        "zh-CN": "抖音热榜"
+      },
+      "description": {
+        "zh-CN": "抖音热榜"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 3,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/douyin",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_douyin.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/douyin",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bilibili_rcmd",
+      "title": {
+        "zh-CN": "B站推荐",
+        "en-US": "Bilibili Recommend"
+      },
+      "description": {
+        "zh-CN": "实时获取B站推荐视频，发现更多精彩内容",
+        "en-US": "Discover more exciting content"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bilibili_rcmd",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_bilibili_rcmd.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bilibili",
+      "title": {
+        "zh-CN": "bilibili热搜"
+      },
+      "description": {
+        "zh-CN": "看看年轻人在B站搜什么"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 3,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bilibili",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/bilibili_hot_search.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/bilibili",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bangumi",
+      "title": {
+        "zh-CN": "B站新番时间表"
+      },
+      "description": {
+        "zh-CN": "追番小助手"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 4,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bangumi",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_bangumi.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/bangumi",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.example.widget.clock",
+      "title": {
+        "zh-CN": "时钟"
+      },
+      "description": {
+        "zh-CN": "Hello world!"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 2,
+      "height": 2,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 2,
+      "minHeight": 2,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/clock",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/preview_clock.png",
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/clock?frame=true&transparent=false&width=600&height=400",
+      "routes": []
     }
   ],
   "pages": []

@@ -3,7 +3,6 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import duration from 'dayjs/plugin/duration'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
 baseDayjs.extend(customParseFormat)
@@ -11,30 +10,30 @@ baseDayjs.extend(duration)
 baseDayjs.extend(isoWeek)
 baseDayjs.extend(localizedFormat)
 baseDayjs.extend(utc)
-baseDayjs.extend(timezone)
 
 export const APP_TIMEZONE = 'Asia/Shanghai'
-baseDayjs.tz.setDefault(APP_TIMEZONE)
+const APP_UTC_OFFSET_MINUTES = 8 * 60
+const HAS_EXPLICIT_ZONE_RE = /[zZ]|[+-]\d{2}:?\d{2}$/
 
 export function toDayjs(value: string | Date | baseDayjs.Dayjs) {
   if (baseDayjs.isDayjs(value)) {
-    return value.tz(APP_TIMEZONE)
+    return value.utcOffset(APP_UTC_OFFSET_MINUTES)
   }
 
   if (typeof value === 'string') {
-    if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(value)) {
-      return baseDayjs.tz(value, APP_TIMEZONE)
+    if (!HAS_EXPLICIT_ZONE_RE.test(value)) {
+      return baseDayjs(value).utcOffset(APP_UTC_OFFSET_MINUTES, true)
     }
 
-    return baseDayjs(value).tz(APP_TIMEZONE)
+    return baseDayjs(value).utcOffset(APP_UTC_OFFSET_MINUTES)
   }
 
-  return baseDayjs(value).tz(APP_TIMEZONE)
+  return baseDayjs(value).utcOffset(APP_UTC_OFFSET_MINUTES)
 }
 
 export const dayjs = Object.assign(
   (value?: string | Date | baseDayjs.Dayjs) =>
-    value === undefined ? baseDayjs.tz(APP_TIMEZONE) : toDayjs(value),
+    value === undefined ? baseDayjs().utcOffset(APP_UTC_OFFSET_MINUTES) : toDayjs(value),
   baseDayjs,
 ) as typeof baseDayjs
 
@@ -55,15 +54,17 @@ export function toWeekdayNumber(value: string | Date | baseDayjs.Dayjs) {
 }
 
 export function combineDateAndTime(date: string, time: string) {
-  return dayjs.tz(`${date} ${time}`, 'YYYY-MM-DD HH:mm', APP_TIMEZONE).format('YYYY-MM-DDTHH:mm:ssZ')
+  return baseDayjs(`${date} ${time}`, 'YYYY-MM-DD HH:mm', true)
+    .utcOffset(APP_UTC_OFFSET_MINUTES, true)
+    .format('YYYY-MM-DDTHH:mm:ssZ')
 }
 
 export function isValidDateTime(date: string, time: string) {
-  return dayjs.tz(`${date} ${time}`, 'YYYY-MM-DD HH:mm', APP_TIMEZONE).isValid()
+  return baseDayjs(`${date} ${time}`, 'YYYY-MM-DD HH:mm', true).isValid()
 }
 
 export function nowInTimezone() {
-  return dayjs().tz(APP_TIMEZONE)
+  return baseDayjs().utcOffset(APP_UTC_OFFSET_MINUTES)
 }
 
 export function nowIsoString() {
