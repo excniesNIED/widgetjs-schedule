@@ -1,16 +1,17 @@
 <script setup lang="ts">
 withDefaults(defineProps<{
-  title: string
+  title?: string
   description: string
   compact?: boolean
 }>(), {
+  title: '',
   compact: false,
 })
 </script>
 
 <template>
   <div class="empty-state" :class="{ compact }">
-    <strong>{{ title }}</strong>
+    <strong v-if="title">{{ title }}</strong>
     <span>{{ description }}</span>
   </div>
 </template>

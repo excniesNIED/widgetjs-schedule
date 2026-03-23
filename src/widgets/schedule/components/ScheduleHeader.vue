@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   dateLabel: string
   todayCount: number
   toggleLabel: string
@@ -15,11 +15,7 @@ defineEmits<{
   <header class="header">
     <div class="headline">
       <div>
-        <p class="eyebrow">今日节奏</p>
         <h1>{{ dateLabel }}</h1>
-        <p class="summary">
-          {{ todayCount > 0 ? `今日剩余 ${todayCount} 项` : '今天暂无未结束日程' }}
-        </p>
       </div>
       <button
         type="button"
@@ -60,30 +56,16 @@ defineEmits<{
   display: flex;
   justify-content: space-between;
   gap: 0.7rem;
-  align-items: flex-start;
+  align-items: center;
   min-width: 0;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--widget-color) 60%, transparent);
-}
-
 h1 {
-  margin: 0.18rem 0 0;
-  font-size: 1rem;
+  margin: 0;
+  font-size: 1.02rem;
   font-weight: 700;
   color: var(--widget-color);
   line-height: 1.15;
-}
-
-.summary {
-  margin: 0.32rem 0 0;
-  font-size: 0.76rem;
-  color: color-mix(in srgb, var(--widget-color) 64%, transparent);
 }
 
 .view-toggle {
@@ -120,8 +102,8 @@ h1 {
 }
 
 @media (max-width: 560px) {
-  .headline {
-    align-items: center;
+  h1 {
+    font-size: 0.96rem;
   }
 }
 </style>

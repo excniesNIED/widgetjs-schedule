@@ -25,8 +25,9 @@ const progress = computed(() => {
   const start = dayjs(props.occurrence.startAt)
 
   if (props.backgroundMode === 'countdown' && props.occurrence.isUpcoming) {
-    const total = Math.max(start.diff(start.startOf('day'), 'millisecond'), 1)
-    const elapsed = Math.max(current.diff(start.startOf('day'), 'millisecond'), 0)
+    const dayStart = start.startOf('day')
+    const total = Math.max(start.diff(dayStart, 'millisecond'), 1)
+    const elapsed = Math.max(current.diff(dayStart, 'millisecond'), 0)
     return Math.min(Math.max(elapsed / total, 0), 1)
   }
 
@@ -57,13 +58,7 @@ const statusText = computed(() => {
 })
 
 const metaText = computed(() =>
-  [
-    props.occurrence.location,
-    props.occurrence.teacher ? `教师：${props.occurrence.teacher}` : '',
-    props.occurrence.sectionText ? `节次：${props.occurrence.sectionText}` : '',
-  ]
-    .filter(Boolean)
-    .join(' · '),
+  props.occurrence.description || props.occurrence.location || '',
 )
 </script>
 
@@ -95,8 +90,8 @@ const metaText = computed(() =>
         <strong>{{ occurrence.title }}</strong>
         <span>{{ occurrence.repeatLabel }}</span>
       </div>
-      <p v-if="metaText || occurrence.description">
-        {{ metaText || occurrence.description }}
+      <p v-if="metaText">
+        {{ metaText }}
       </p>
     </div>
   </article>
