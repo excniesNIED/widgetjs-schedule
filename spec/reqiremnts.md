@@ -729,6 +729,7 @@ Then 系统应发送一次开始通知，且同一实例不可重复发送
 
 - `refer/demo.csv`
 - `refer/demo.json`
+- 设置页应提供“下载示例 CSV / JSON”按钮，直接下载上述模板
 
 CSV 模板：
 
@@ -749,11 +750,15 @@ JSON 模板：
     "timeMode": "range",
     "startAt": "2026-03-23T08:20:00+08:00",
     "endAt": "2026-03-23T09:55:00+08:00",
+    "alarmOffsetMinutes": 10,
     "recurrenceType": "weekly",
     "recurrenceInterval": 1,
     "recurrenceWeekdays": [1, 3, 5],
     "recurrenceWeeks": "1-16",
-    "description": "1-16周，理科楼A302",
+    "recurrenceWeekStart": 1,
+    "teacher": "王老师",
+    "sectionText": "1-2节",
+    "description": "教师：王老师 · 节次：1-2节",
     "location": "理科楼A302",
     "color": "#dbeafe"
   },
@@ -782,6 +787,14 @@ JSON 模板：
 5. 导入能力按 `JSON -> CSV -> ICS` 顺序落地
 6. 导出能力按 `JSON -> CSV -> ICS` 顺序落地
 6. 通知最后联调，并在 Windows 真机验证
+
+补充说明：
+
+- 设置页应拆分为 `主题设置` 与 `日程设置` 两个一级分区
+- `主题设置` 内包含显示与颜色相关选项
+- `日程设置` 内包含导入导出、示例模板下载、通知开关、手动添加/编辑与已保存事件管理
+- 已保存事件应支持“编辑”回填，而不是仅支持删除
+- ICS 导入应优先尝试按课程系列聚合，并解析 `VALARM`、教师、节次、地点与周次锚点
 
 ## 18. 运行、测试与发布文档
 

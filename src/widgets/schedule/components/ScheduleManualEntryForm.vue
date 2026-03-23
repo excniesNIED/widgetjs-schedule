@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import { combineDateAndTime } from '../model/date'
+import { computed, reactive, watch } from 'vue'
+import { combineDateAndTime, dayjs } from '../model/date'
 import { normalizeWeeksExpression } from '../model/recurrence'
 import type {
   ScheduleEventRecord,
@@ -9,10 +9,12 @@ import type {
 
 const props = defineProps<{
   defaultColor: string
+  editingEvent?: ScheduleEventRecord | null
 }>()
 
 const emit = defineEmits<{
   submit: [payload: Partial<ScheduleEventRecord>]
+  cancelEdit: []
 }>()
 
 const today = new Date().toISOString().slice(0, 10)
@@ -57,6 +59,28 @@ const showInterval = computed(() =>
   ].includes(form.recurrenceType),
 )
 
+const isEditing = computed(() => Boolean(props.editingEvent))
+
+function applyEventToForm(event?: ScheduleEventRecord | null) {
+  if (!event) {
+    reset()
+    return
+  }
+
+  form.title = event.title
+  form.date = dayjs(event.startAt).format('YYYY-MM-DD')
+  form.startTime = dayjs(event.startAt).format('HH:mm')
+  form.endTime = event.endAt ? dayjs(event.endAt).format('HH:mm') : ''
+  form.recurrenceType = event.recurrenceType
+  form.recurrenceInterval = event.recurrenceInterval ?? 1
+  form.weekdays = event.recurrenceWeekdays ? [...event.recurrenceWeekdays] : []
+  form.weeks = event.recurrenceWeeks ?? ''
+  form.recurrenceRRule = event.recurrenceRRule ?? ''
+  form.description = event.description ?? ''
+  form.location = event.location ?? ''
+  form.color = event.color ?? props.defaultColor
+}
+
 function reset() {
   form.title = ''
   form.date = today
@@ -72,12 +96,22 @@ function reset() {
   form.color = props.defaultColor
 }
 
+watch(
+  () => props.editingEvent,
+  (event) => {
+    applyEventToForm(event)
+  },
+  { immediate: true },
+)
+
 function onSubmit() {
   if (!form.title.trim()) {
     return
   }
 
   emit('submit', {
+    id: props.editingEvent?.id,
+    uid: props.editingEvent?.uid,
     title: form.title.trim(),
     startAt: combineDateAndTime(form.date, form.startTime),
     endAt: form.endTime ? combineDateAndTime(form.date, form.endTime) : undefined,
@@ -92,12 +126,33 @@ function onSubmit() {
     color: form.color,
   })
 
+  if (isEditing.value) {
+    emit('cancelEdit')
+  }
+  else {
+    reset()
+  }
+}
+
+function handleCancelEdit() {
+  emit('cancelEdit')
   reset()
 }
 </script>
 
 <template>
   <div class="manual-form">
+    <div class="form-head">
+      <strong>{{ isEditing ? '编辑日程' : '手动添加' }}</strong>
+      <el-button
+        v-if="isEditing"
+        text
+        @click="handleCancelEdit"
+      >
+        取消编辑
+      </el-button>
+    </div>
+
     <div class="grid two">
       <label>
         <span>日程名</span>
@@ -183,7 +238,7 @@ function onSubmit() {
 
     <div class="actions">
       <el-button type="primary" @click="onSubmit">
-        添加日程
+        {{ isEditing ? '保存修改' : '添加日程' }}
       </el-button>
     </div>
   </div>
@@ -193,6 +248,18 @@ function onSubmit() {
 .manual-form {
   display: grid;
   gap: 0.8rem;
+}
+
+.form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.form-head strong {
+  font-size: 0.92rem;
+  color: #243744;
 }
 
 .grid {

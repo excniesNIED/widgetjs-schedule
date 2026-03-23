@@ -55,6 +55,16 @@ const statusText = computed(() => {
 
   return '已结束'
 })
+
+const metaText = computed(() =>
+  [
+    props.occurrence.location,
+    props.occurrence.teacher ? `教师：${props.occurrence.teacher}` : '',
+    props.occurrence.sectionText ? `节次：${props.occurrence.sectionText}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · '),
+)
 </script>
 
 <template>
@@ -85,8 +95,8 @@ const statusText = computed(() => {
         <strong>{{ occurrence.title }}</strong>
         <span>{{ occurrence.repeatLabel }}</span>
       </div>
-      <p v-if="occurrence.location || occurrence.description">
-        {{ occurrence.location || occurrence.description }}
+      <p v-if="metaText || occurrence.description">
+        {{ metaText || occurrence.description }}
       </p>
     </div>
   </article>
@@ -111,8 +121,8 @@ const statusText = computed(() => {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 0.34rem;
-  padding: 0.72rem 0.78rem;
+  gap: 0.32rem;
+  padding: 0.78rem 0.84rem;
 }
 
 .time-line,
@@ -136,9 +146,17 @@ p {
   color: color-mix(in srgb, var(--widget-color) 70%, transparent);
 }
 
+.title-line span {
+  text-align: right;
+}
+
 .title-line strong {
   font-size: 0.92rem;
   line-height: 1.35;
+}
+
+p {
+  line-height: 1.45;
 }
 
 .ongoing {

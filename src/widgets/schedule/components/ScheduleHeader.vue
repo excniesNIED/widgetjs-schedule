@@ -1,16 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { formatOccurrenceTime } from '../model/format'
-import {
-  getHeaderBadge,
-  type ScheduleHeaderBadge,
-} from '../model/presentation'
-import type { ScheduleOccurrence } from '../model/types'
-
 const props = defineProps<{
   dateLabel: string
-  current?: ScheduleOccurrence
-  next?: ScheduleOccurrence
   todayCount: number
   toggleLabel: string
   toggleIcon: 'calendar' | 'list'
@@ -19,16 +9,6 @@ const props = defineProps<{
 defineEmits<{
   'toggle-view': []
 }>()
-
-const badge = computed<ScheduleHeaderBadge | null>(() =>
-  getHeaderBadge(
-    {
-      current: props.current,
-      next: props.next,
-    },
-    props.todayCount,
-  ),
-)
 </script>
 
 <template>
@@ -37,6 +17,9 @@ const badge = computed<ScheduleHeaderBadge | null>(() =>
       <div>
         <p class="eyebrow">今日节奏</p>
         <h1>{{ dateLabel }}</h1>
+        <p class="summary">
+          {{ todayCount > 0 ? `今日剩余 ${todayCount} 项` : '今天暂无未结束日程' }}
+        </p>
       </div>
       <button
         type="button"
@@ -65,40 +48,20 @@ const badge = computed<ScheduleHeaderBadge | null>(() =>
         </svg>
       </button>
     </div>
-    <div v-if="badge" class="meta">
-      <div
-        class="pill ongoing"
-        :class="badge.kind"
-      >
-        <span v-if="badge.kind === 'ongoing'">进行中</span>
-        <span v-else-if="badge.kind === 'upcoming'">下一项</span>
-        <span v-else>今日摘要</span>
-        <strong>{{ badge.title }}</strong>
-        <small v-if="badge.kind === 'ongoing' && current">
-          {{ formatOccurrenceTime(current) }}
-        </small>
-        <small v-else-if="badge.kind === 'upcoming' && next">
-          {{ formatOccurrenceTime(next) }}
-        </small>
-        <small v-else-if="badge.kind === 'summary'">
-          {{ badge.emphasis }}
-        </small>
-      </div>
-    </div>
   </header>
 </template>
 
 <style scoped>
 .header {
-  display: grid;
-  gap: 0.8rem;
+  min-width: 0;
 }
 
 .headline {
   display: flex;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 0.7rem;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .eyebrow {
@@ -117,9 +80,10 @@ h1 {
   line-height: 1.15;
 }
 
-.meta {
-  display: flex;
-  min-width: 0;
+.summary {
+  margin: 0.32rem 0 0;
+  font-size: 0.76rem;
+  color: color-mix(in srgb, var(--widget-color) 64%, transparent);
 }
 
 .view-toggle {
@@ -155,53 +119,9 @@ h1 {
   stroke-linejoin: round;
 }
 
-.pill {
-  min-width: 0;
-  display: grid;
-  gap: 0.12rem;
-  padding: 0.52rem 0.7rem;
-  border-radius: 1rem;
-  color: var(--widget-color);
-  background: color-mix(in srgb, var(--widget-background-color) 74%, white);
-  border: 1px solid color-mix(in srgb, var(--widget-color) 12%, transparent);
-}
-
-.pill span {
-  font-size: 0.72rem;
-  color: color-mix(in srgb, var(--widget-color) 68%, transparent);
-}
-
-.pill strong {
-  font-size: 0.9rem;
-}
-
-.pill small {
-  font-size: 0.78rem;
-}
-
-.ongoing {
-  background: linear-gradient(135deg, color-mix(in srgb, #ce6a4b 24%, white), transparent);
-}
-
-.upcoming {
-  background: linear-gradient(135deg, color-mix(in srgb, #4b7a87 24%, white), transparent);
-}
-
-.summary {
-  background: color-mix(in srgb, var(--widget-background-color) 82%, white);
-}
-
 @media (max-width: 560px) {
   .headline {
     align-items: center;
-  }
-
-  .meta {
-    width: 100%;
-  }
-
-  .pill {
-    width: 100%;
   }
 }
 </style>

@@ -27,10 +27,11 @@ const {
   updateSettings,
 } = useScheduleStore()
 
-const { importByFile, exportByType } = useScheduleImportExport()
+const { importByFile, exportByType, downloadExample } = useScheduleImportExport()
 const importMessage = ref('')
 const importError = ref('')
 const fileInput = ref<HTMLInputElement>()
+const editingEvent = ref<ScheduleEventRecord | null>(null)
 
 async function onFileSelected(event: Event) {
   const target = event.target as HTMLInputElement
@@ -64,7 +65,14 @@ function triggerImport() {
 
 function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
   upsertEvent(payload)
-  importMessage.value = '已添加新日程'
+  editingEvent.value = null
+  importMessage.value = payload.id ? '已更新日程' : '已添加新日程'
+}
+
+function handleEdit(event: ScheduleEventRecord) {
+  editingEvent.value = { ...event }
+  importError.value = ''
+  importMessage.value = ''
 }
 </script>
 
@@ -79,7 +87,7 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
     <template #custom>
       <div class="config-scroll">
         <section class="config-section">
-          <h3>显示设置</h3>
+          <h2>主题设置</h2>
           <div class="row two">
             <label>
               <span>默认视图</span>
@@ -182,10 +190,39 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
         </section>
 
         <section class="config-section">
-          <h3>手动添加</h3>
+          <h2>日程设置</h2>
+          <div class="row three">
+            <label class="switch">
+              <span>提醒通知</span>
+              <el-switch
+                v-model="settings.notifyOnAlarm"
+                @change="updateSettings({ notifyOnAlarm: settings.notifyOnAlarm })"
+              />
+            </label>
+            <label class="switch">
+              <span>开始通知</span>
+              <el-switch
+                v-model="settings.notifyOnStart"
+                @change="updateSettings({ notifyOnStart: settings.notifyOnStart })"
+              />
+            </label>
+            <label class="switch">
+              <span>结束通知</span>
+              <el-switch
+                v-model="settings.notifyOnEnd"
+                @change="updateSettings({ notifyOnEnd: settings.notifyOnEnd })"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="config-section">
+          <h3>手动添加与编辑</h3>
           <ScheduleManualEntryForm
             :default-color="settings.cardColor"
+            :editing-event="editingEvent"
             @submit="handleManualSubmit"
+            @cancel-edit="editingEvent = null"
           />
         </section>
 
@@ -203,6 +240,12 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
             </el-button>
             <el-button @click="exportByType('ics', sortedEvents)">
               导出 ICS
+            </el-button>
+            <el-button plain @click="downloadExample('csv')">
+              下载示例 CSV
+            </el-button>
+            <el-button plain @click="downloadExample('json')">
+              下载示例 JSON
             </el-button>
           </div>
           <input
@@ -234,18 +277,23 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
             <article
               v-for="event in sortedEvents"
               :key="event.id"
-              class="saved-item"
-            >
-              <div>
-                <strong>{{ event.title }}</strong>
-                <span>{{ event.startAt.slice(0, 16).replace('T', ' ') }}</span>
-              </div>
+            class="saved-item"
+          >
+            <div>
+              <strong>{{ event.title }}</strong>
+              <span>{{ event.startAt.slice(0, 16).replace('T', ' ') }}</span>
+            </div>
+            <div class="saved-actions">
+              <el-button text @click="handleEdit(event)">
+                编辑
+              </el-button>
               <el-button text type="danger" @click="removeEvent(event.id)">
                 删除
               </el-button>
-            </article>
-          </div>
-          <p v-else class="message">
+            </div>
+          </article>
+        </div>
+        <p v-else class="message">
             当前还没有日程数据。
           </p>
         </section>
@@ -275,6 +323,12 @@ function handleManualSubmit(payload: Partial<ScheduleEventRecord>) {
 .config-section h3 {
   margin: 0;
   font-size: 1rem;
+  color: #243744;
+}
+
+.config-section h2 {
+  margin: 0;
+  font-size: 1.06rem;
   color: #243744;
 }
 
@@ -358,6 +412,12 @@ label span {
   gap: 0.2rem;
 }
 
+.saved-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
 .saved-item strong {
   color: #243744;
 }
@@ -377,6 +437,10 @@ label span {
   .saved-item {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .saved-actions {
+    justify-content: flex-end;
   }
 }
 </style>

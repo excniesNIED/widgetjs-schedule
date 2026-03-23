@@ -2,12 +2,10 @@ import { computed, type Ref } from 'vue'
 import { dayjs } from '../model/date'
 import {
   expandEventsInRange,
-  getCurrentAndNextOccurrence,
 } from '../model/occurrence'
 import { groupOccurrencesByDate } from '../model/format'
 import type {
   ScheduleEventRecord,
-  ScheduleOccurrence,
   ScheduleWidgetSettings,
 } from '../model/types'
 
@@ -52,7 +50,9 @@ export function useScheduleView(
     }),
   )
 
-  const summary = computed(() => getCurrentAndNextOccurrence(todayOccurrences.value))
+  const todayActiveOccurrences = computed(() =>
+    todayOccurrences.value.filter(occurrence => !occurrence.isPast),
+  )
   const weekDays = computed(() => buildWeekDays(now.value))
   const groupedWeekOccurrences = computed(() =>
     groupOccurrencesByDate(weekOccurrences.value),
@@ -94,9 +94,9 @@ export function useScheduleView(
 
   return {
     todayOccurrences,
+    todayActiveOccurrences,
     weekOccurrences,
     weekDays,
-    summary,
     density,
     getWeekOccurrencesForDay,
   }

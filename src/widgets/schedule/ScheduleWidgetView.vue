@@ -9,6 +9,7 @@ import { useScheduleStore } from './composables/useScheduleStore'
 import { useScheduleView } from './composables/useScheduleView'
 import { formatLongDateLabel } from './model/format'
 import { getViewToggleAction } from './model/presentation'
+import { getRecommendedRefreshDelay } from './model/refresh'
 import type { ScheduleViewMode } from './model/types'
 
 const { size } = useWidget({
@@ -24,9 +25,8 @@ const {
 } = useScheduleStore()
 
 const {
-  todayOccurrences,
+  todayActiveOccurrences,
   weekDays,
-  summary,
   density,
   getWeekOccurrencesForDay,
 } = useScheduleView(
@@ -59,17 +59,28 @@ function toggleView() {
   activeView.value = viewToggleAction.value.nextView
 }
 
+const refreshCheckpoints = computed(() =>
+  todayActiveOccurrences.value.flatMap(occurrence => [
+    occurrence.startAt,
+    occurrence.endAt,
+  ].filter(Boolean) as string[]),
+)
+
 useScheduleNotifications(sortedEvents, settings, notificationLog, now)
 
+function scheduleTick() {
+  now.value = new Date().toISOString()
+  const delay = getRecommendedRefreshDelay(refreshCheckpoints.value, now.value)
+  timer = window.setTimeout(scheduleTick, delay)
+}
+
 onMounted(() => {
-  timer = window.setInterval(() => {
-    now.value = new Date().toISOString()
-  }, 30_000)
+  scheduleTick()
 })
 
 onUnmounted(() => {
   if (timer) {
-    window.clearInterval(timer)
+    window.clearTimeout(timer)
   }
 })
 </script>
@@ -79,9 +90,7 @@ onUnmounted(() => {
     <section class="schedule-widget" :class="density">
       <ScheduleHeader
         :date-label="formatLongDateLabel(now)"
-        :current="summary.current"
-        :next="summary.next"
-        :today-count="todayOccurrences.length"
+        :today-count="todayActiveOccurrences.length"
         :toggle-label="viewToggleAction.label"
         :toggle-icon="viewToggleAction.icon"
         @toggle-view="toggleView"
@@ -90,7 +99,7 @@ onUnmounted(() => {
       <main class="content">
         <ScheduleListView
           v-if="activeView === 'list'"
-          :occurrences="todayOccurrences"
+          :occurrences="todayActiveOccurrences"
           :now="now"
           :background-mode="settings.listBackgroundMode"
         />
@@ -112,15 +121,18 @@ onUnmounted(() => {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.72rem;
+  box-sizing: border-box;
+  padding: calc(var(--widget-padding, 12px) * 0.9);
   color: var(--widget-color);
   user-select: none;
   -webkit-user-select: none;
+  overflow: hidden;
 }
 
 .content {
   min-height: 0;
   overflow: auto;
-  padding-right: 0.1rem;
+  padding-right: 0.18rem;
 }
 
 .compact .content {

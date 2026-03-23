@@ -1,3 +1,5 @@
+import demoCsv from '../../../../refer/demo.csv?raw'
+import demoJson from '../../../../refer/demo.json?raw'
 import { exportEventsToCsv } from '../exporters/csv'
 import { exportEventsToIcs } from '../exporters/ics'
 import { exportEventsToJson } from '../exporters/json'
@@ -68,8 +70,26 @@ export function useScheduleImportExport() {
     )
   }
 
+  function downloadExample(type: 'csv' | 'json') {
+    if (type === 'csv') {
+      downloadTextFile(
+        'schedule-demo.csv',
+        demoCsv,
+        'text/csv;charset=utf-8',
+      )
+      return
+    }
+
+    downloadTextFile(
+      'schedule-demo.json',
+      demoJson,
+      'application/json;charset=utf-8',
+    )
+  }
+
   return {
     importByFile,
     exportByType,
+    downloadExample,
   }
 }
