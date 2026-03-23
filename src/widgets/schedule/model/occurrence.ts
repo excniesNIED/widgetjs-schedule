@@ -13,6 +13,8 @@ import type {
   ScheduleSummary,
 } from './types'
 
+const POINT_EVENT_VISIBLE_MINUTES = 30
+
 function overlapsRange(
   startAt: string,
   endAt: string | undefined,
@@ -35,7 +37,7 @@ function buildOccurrence(
   fallbackColors = buildDefaultSettings(),
 ): ScheduleOccurrence {
   const start = dayjs(startAt)
-  const end = endAt ? dayjs(endAt) : start
+  const end = endAt ? dayjs(endAt) : start.add(POINT_EVENT_VISIBLE_MINUTES, 'minute')
   const current = dayjs(now)
   const isOngoing = !current.isBefore(start) && current.isBefore(end)
   const isUpcoming = current.isBefore(start)

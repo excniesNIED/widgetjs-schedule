@@ -4,7 +4,7 @@ import {
   buildDefaultEvent,
   buildDefaultSettings,
 } from '../model/defaults'
-import { toLocalDate } from '../model/date'
+import { toLocalDate, toLocalTime } from '../model/date'
 import {
   expandEventsInRange,
   getCurrentAndNextOccurrence,
@@ -150,6 +150,34 @@ describe('schedule occurrence model', () => {
     ])
   })
 
+  it('keeps local wall-clock time when recurring events are imported from UTC ICS timestamps', () => {
+    const event = buildEvent({
+      title: '操作系统',
+      timeMode: 'range',
+      startAt: '2026-03-09T02:10:00.000Z',
+      endAt: '2026-03-09T03:45:00.000Z',
+      recurrenceType: 'weekly',
+      recurrenceInterval: 1,
+      recurrenceWeekdays: [1],
+      recurrenceWeeks: '1-16',
+      recurrenceWeekStart: 1,
+      source: 'ics',
+    })
+
+    const occurrences = expandEventsInRange({
+      events: [event],
+      rangeStart: '2026-03-23T00:00:00+08:00',
+      rangeEnd: '2026-03-23T23:59:59+08:00',
+      now: '2026-03-23T08:00:00+08:00',
+      settings: buildDefaultSettings(),
+    })
+
+    expect(occurrences).toHaveLength(1)
+    expect(toLocalDate(occurrences[0]!.startAt)).toBe('2026-03-23')
+    expect(toLocalTime(occurrences[0]!.startAt)).toBe('10:10')
+    expect(toLocalTime(occurrences[0]!.endAt!)).toBe('11:45')
+  })
+
   it('can filter out past occurrences from today display', () => {
     const events = [
       buildEvent({
@@ -184,5 +212,24 @@ describe('schedule occurrence model', () => {
 
     expect(visibleToday).toHaveLength(2)
     expect(visibleToday.map(item => item.title)).toEqual(['正在进行', '接下来'])
+  })
+
+  it('keeps point events visible for a short active window after start time', () => {
+    const event = buildEvent({
+      title: '手动提醒',
+      timeMode: 'point',
+      startAt: '2026-03-23T12:04:00+08:00',
+    })
+
+    const occurrences = expandEventsInRange({
+      events: [event],
+      rangeStart: '2026-03-23T00:00:00+08:00',
+      rangeEnd: '2026-03-23T23:59:59+08:00',
+      now: '2026-03-23T12:10:00+08:00',
+      settings: buildDefaultSettings(),
+    })
+
+    expect(occurrences).toHaveLength(1)
+    expect(occurrences[0]?.isOngoing).toBe(true)
   })
 })

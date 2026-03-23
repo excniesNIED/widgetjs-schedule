@@ -152,30 +152,14 @@ function byWeekdayFromNumbers(days: number[]) {
 }
 
 function toWallClockDate(value: string) {
-  const match = value.match(
-    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/,
-  )
-
-  if (match) {
-    const [, year, month, day, hour, minute, second = '0'] = match
-    return datetime(
-      Number(year),
-      Number(month),
-      Number(day),
-      Number(hour),
-      Number(minute),
-      Number(second),
-    )
-  }
-
-  const date = new Date(value)
+  const date = toDayjs(value).toDate()
   return datetime(
-    date.getUTCFullYear(),
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds(),
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
   )
 }
 
