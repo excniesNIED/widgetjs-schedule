@@ -42,6 +42,7 @@ describe('schedule import export', () => {
     const csv = exportEventsToCsv([event])
 
     expect(csv).toContain('title,date,start_time,end_time,repeat_type')
+    expect(csv).not.toContain('location')
     expect(csv).toContain('午休提醒')
   })
 
@@ -85,10 +86,10 @@ describe('schedule import export', () => {
 
     expect(events).toHaveLength(1)
     expect(events[0]?.title).toBe('线性代数')
-    expect(events[0]?.location).toBe('教学楼301')
     expect(events[0]?.recurrenceRRule).toContain('FREQ=WEEKLY')
     expect(serialized).toContain('BEGIN:VEVENT')
     expect(serialized).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO')
+    expect(serialized).not.toContain('LOCATION:')
   })
 
   it('collapses repeated course vevents into one weekly course series', () => {

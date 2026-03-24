@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { buildNotificationContent } from '../composables/useScheduleNotifications'
 import { buildNotificationCheckpoints, getRecommendedRefreshDelay, REFRESH_DELAYS } from '../model/refresh'
 import type { ScheduleOccurrence, ScheduleWidgetSettings } from '../model/types'
 
@@ -37,7 +38,7 @@ describe('schedule notification helpers', () => {
 
     expect(checkpoints).toHaveLength(3)
     expect(checkpoints.map(item => item.kind)).toEqual(['alarm', 'start', 'end'])
-    expect(checkpoints[0]?.timestamp).toBe('2026-03-23T01:50:00.000Z')
+    expect(checkpoints[0]?.timestamp).toBe('2026-03-23T09:50:00+08:00')
   })
 
   it('uses 10 minutes by default when no checkpoint is near', () => {
@@ -78,5 +79,20 @@ describe('schedule notification helpers', () => {
     })
 
     expect(delay).toBe(REFRESH_DELAYS.near)
+  })
+
+  it('includes detailed schedule info in notifications without using deprecated location text', () => {
+    const payload = buildNotificationContent('start', buildOccurrence({
+      description: '第 8 周课程实验',
+      teacher: '李老师',
+      sectionText: '3-4 节',
+    }))
+
+    expect(payload.title).toBe('日程开始')
+    expect(payload.message).toContain('操作系统')
+    expect(payload.message).toContain('第 8 周课程实验')
+    expect(payload.message).toContain('李老师')
+    expect(payload.message).toContain('3-4 节')
+    expect(payload.message).not.toContain('已废弃地点字段')
   })
 })

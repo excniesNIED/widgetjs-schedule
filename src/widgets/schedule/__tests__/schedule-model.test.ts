@@ -5,6 +5,7 @@ import {
   buildDefaultSettings,
 } from '../model/defaults'
 import { toLocalDate, toLocalTime } from '../model/date'
+import { normalizeEventRecord } from '../model/normalize'
 import {
   expandEventsInRange,
   getCurrentAndNextOccurrence,
@@ -19,6 +20,23 @@ function buildEvent(partial: Partial<ScheduleEventRecord>): ScheduleEventRecord 
 }
 
 describe('schedule occurrence model', () => {
+  it('keeps generated ids when manual submit passes id as undefined', () => {
+    const first = normalizeEventRecord({
+      id: undefined,
+      title: '手动添加 1',
+      startAt: '2026-03-23T10:00:00+08:00',
+    }, 'manual')
+    const second = normalizeEventRecord({
+      id: undefined,
+      title: '手动添加 2',
+      startAt: '2026-03-23T11:00:00+08:00',
+    }, 'manual')
+
+    expect(first.id).toBeTruthy()
+    expect(second.id).toBeTruthy()
+    expect(first.id).not.toBe(second.id)
+  })
+
   it('expands a single range event inside the requested day', () => {
     const event = buildEvent({
       title: '项目站会',
