@@ -241,6 +241,20 @@ function handleEdit(event: ScheduleEventRecord) {
                 </div>
               </div>
 
+              <div class="sub-section">
+                <h3>时间点事件默认持续时间</h3>
+                <label class="setting-item">
+                  <span>分钟数</span>
+                  <el-input-number
+                    :model-value="settings.pointEventDurationMinutes"
+                    :min="1"
+                    :max="60"
+                    :step="1"
+                    @change="(val: number) => updateSettings({ pointEventDurationMinutes: val })"
+                  />
+                </label>
+              </div>
+
               <div ref="editSectionRef" class="sub-section">
                 <h3>{{ editingEvent ? '编辑日程' : '手动添加' }}</h3>
                 <ScheduleManualEntryForm

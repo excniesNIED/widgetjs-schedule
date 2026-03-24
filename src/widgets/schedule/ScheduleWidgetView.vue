@@ -93,6 +93,7 @@ onUnmounted(() => {
               :now="now"
               :background-mode="settings.listBackgroundMode"
               :density="density"
+              :point-event-duration-minutes="settings.pointEventDurationMinutes"
             />
           </div>
         </main>

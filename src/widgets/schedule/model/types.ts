@@ -79,6 +79,7 @@ export interface ScheduleWidgetSettings {
   notifyOnEnd: boolean
   notificationTypes: ScheduleNotificationType[]
   toastDuration: number
+  pointEventDurationMinutes: number
 }
 
 export interface ExpandEventsRangeInput {

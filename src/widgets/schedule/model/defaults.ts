@@ -47,5 +47,6 @@ export function buildDefaultSettings(): ScheduleWidgetSettings {
     notifyOnEnd: false,
     notificationTypes: ['toast', 'system'],
     toastDuration: 5000,
+    pointEventDurationMinutes: 5,
   }
 }

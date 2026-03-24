@@ -8,6 +8,7 @@ withDefaults(defineProps<{
   now: string
   backgroundMode: ScheduleListBackgroundMode
   density?: 'compact' | 'standard' | 'large'
+  pointEventDurationMinutes?: number
 }>(), {
   occurrences: () => [],
   density: 'standard',
@@ -22,6 +23,7 @@ withDefaults(defineProps<{
       :occurrence="occurrence"
       :now="now"
       :background-mode="backgroundMode"
+      :point-event-duration-minutes="pointEventDurationMinutes"
     />
   </div>
   <ScheduleEmptyState

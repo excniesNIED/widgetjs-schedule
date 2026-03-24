@@ -11,18 +11,21 @@ const props = defineProps<{
   occurrence: ScheduleOccurrence
   now: string
   backgroundMode: ScheduleListBackgroundMode
+  pointEventDurationMinutes?: number
 }>()
 
 const fillRatio = computed(() => getOccurrenceFillRatio(
   props.occurrence,
   props.now,
   props.backgroundMode,
+  props.pointEventDurationMinutes,
 ))
 
 const statusText = computed(() => getOccurrenceStatusText(
   props.occurrence,
   props.now,
   props.backgroundMode,
+  props.pointEventDurationMinutes,
 ))
 
 const fillStyle = computed(() => {

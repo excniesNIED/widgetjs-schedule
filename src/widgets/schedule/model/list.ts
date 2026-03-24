@@ -4,14 +4,14 @@ import type {
   ScheduleOccurrence,
 } from './types'
 
-const POINT_EVENT_DURATION_MINUTES = 30
+const DEFAULT_POINT_EVENT_DURATION = 5
 
-function getOccurrenceEndAt(occurrence: ScheduleOccurrence) {
+function getOccurrenceEndAt(occurrence: ScheduleOccurrence, pointDurationMinutes?: number) {
   if (occurrence.endAt) {
     return dayjs(occurrence.endAt)
   }
 
-  return dayjs(occurrence.startAt).add(POINT_EVENT_DURATION_MINUTES, 'minute')
+  return dayjs(occurrence.startAt).add(pointDurationMinutes ?? DEFAULT_POINT_EVENT_DURATION, 'minute')
 }
 
 function clampRatio(value: number) {
@@ -39,13 +39,14 @@ export function getOccurrenceFillRatio(
   occurrence: ScheduleOccurrence,
   now: string,
   backgroundMode: ScheduleListBackgroundMode,
+  pointEventDurationMinutes?: number,
 ) {
   if (backgroundMode === 'none' || !occurrence.isOngoing) {
     return 0
   }
 
   const start = dayjs(occurrence.startAt)
-  const end = getOccurrenceEndAt(occurrence)
+  const end = getOccurrenceEndAt(occurrence, pointEventDurationMinutes)
   const current = dayjs(now)
   const total = Math.max(end.diff(start, 'millisecond'), 1)
   const elapsed = Math.max(current.diff(start, 'millisecond'), 0)
@@ -66,10 +67,11 @@ export function getOccurrenceStatusText(
   occurrence: ScheduleOccurrence,
   now: string,
   backgroundMode: ScheduleListBackgroundMode,
+  pointEventDurationMinutes?: number,
 ) {
   if (occurrence.isOngoing) {
     if (backgroundMode === 'countdown') {
-      return formatRemainingTime(getOccurrenceEndAt(occurrence).format(), now)
+      return formatRemainingTime(getOccurrenceEndAt(occurrence, pointEventDurationMinutes).format(), now)
     }
 
     return '正在进行'
