@@ -51,6 +51,252 @@
       "routes": []
     },
     {
+      "name": "cn.excnies.widget.schedule.tou_tiao",
+      "title": {
+        "zh-CN": "头条热榜"
+      },
+      "description": {
+        "zh-CN": "今日头条热度榜单"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/tou_tiao",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_toutiao.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": []
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.douyin",
+      "title": {
+        "zh-CN": "抖音热榜"
+      },
+      "description": {
+        "zh-CN": "抖音热榜"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 3,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/douyin",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_douyin.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/douyin",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.excnies.widget.schedule.cls_telegraph",
+      "title": {
+        "zh-CN": "财联社电报"
+      },
+      "description": {
+        "zh-CN": "每5分钟刷新一次"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/cls_telegraph",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_cls_telegraph.png",
+      "categories": [
+        "finance",
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": []
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bilibili_rcmd",
+      "title": {
+        "zh-CN": "B站推荐",
+        "en-US": "Bilibili Recommend"
+      },
+      "description": {
+        "zh-CN": "实时获取B站推荐视频，发现更多精彩内容",
+        "en-US": "Discover more exciting content"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bilibili_rcmd",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_bilibili_rcmd.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bilibili",
+      "title": {
+        "zh-CN": "bilibili热搜"
+      },
+      "description": {
+        "zh-CN": "看看年轻人在B站搜什么"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 3,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bilibili",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/bilibili_hot_search.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/bilibili",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
+      "name": "cn.widgetjs.widgets.hotspot.bangumi",
+      "title": {
+        "zh-CN": "B站新番时间表"
+      },
+      "description": {
+        "zh-CN": "追番小助手"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 4,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/bangumi",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_bangumi.png",
+      "categories": [
+        "news"
+      ],
+      "supportDeployMode": 17,
+      "routes": [
+        {
+          "url": "/widget/bangumi",
+          "name": "index"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "github",
+          "link": "https://github.com/widget-js/hotspot"
+        }
+      ]
+    },
+    {
       "name": "cn.excnies.widget.schedule.todo_list",
       "title": {
         "zh-CN": "待办事项（Pro）",
@@ -212,43 +458,6 @@
       "routes": []
     },
     {
-      "name": "itime.fun.calendar",
-      "title": {
-        "zh-CN": "日历",
-        "en-US": "Calendar"
-      },
-      "description": {
-        "zh-CN": "简单的日历，支持节假日显示",
-        "en-US": "Simple calendar with holiday display"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 4,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 4,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/calendar",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_calendar.png",
-      "categories": [
-        "calendar"
-      ],
-      "supportDeployMode": 17,
-      "configPagePath": "/widget/config/calendar?frame=true&transparent=false",
-      "routes": []
-    },
-    {
       "name": "itime.fun.countdown",
       "title": {
         "zh-CN": "倒计时",
@@ -323,6 +532,43 @@
       "routes": []
     },
     {
+      "name": "itime.fun.calendar",
+      "title": {
+        "zh-CN": "日历",
+        "en-US": "Calendar"
+      },
+      "description": {
+        "zh-CN": "简单的日历，支持节假日显示",
+        "en-US": "Simple calendar with holiday display"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 4,
+      "minHeight": 4,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/calendar",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/images/preview_calendar.png",
+      "categories": [
+        "calendar"
+      ],
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/calendar?frame=true&transparent=false",
+      "routes": []
+    },
+    {
       "name": "cn.excnies.widget.schedule.birthday_list",
       "title": {
         "zh-CN": "生日列表",
@@ -359,252 +605,6 @@
       "supportDeployMode": 17,
       "configPagePath": "/widget/config/birthday_list?frame=true&transparent=false&width=600&height=400",
       "routes": []
-    },
-    {
-      "name": "cn.excnies.widget.schedule.tou_tiao",
-      "title": {
-        "zh-CN": "头条热榜"
-      },
-      "description": {
-        "zh-CN": "今日头条热度榜单"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 4,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 4,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/tou_tiao",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_toutiao.png",
-      "categories": [
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": []
-    },
-    {
-      "name": "cn.excnies.widget.schedule.cls_telegraph",
-      "title": {
-        "zh-CN": "财联社电报"
-      },
-      "description": {
-        "zh-CN": "每5分钟刷新一次"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 4,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 4,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/cls_telegraph",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_cls_telegraph.png",
-      "categories": [
-        "finance",
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": []
-    },
-    {
-      "name": "cn.widgetjs.widgets.hotspot.douyin",
-      "title": {
-        "zh-CN": "抖音热榜"
-      },
-      "description": {
-        "zh-CN": "抖音热榜"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 3,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 3,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/douyin",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_douyin.png",
-      "categories": [
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": [
-        {
-          "url": "/widget/douyin",
-          "name": "index"
-        }
-      ],
-      "socialLinks": [
-        {
-          "name": "github",
-          "link": "https://github.com/widget-js/hotspot"
-        }
-      ]
-    },
-    {
-      "name": "cn.widgetjs.widgets.hotspot.bilibili_rcmd",
-      "title": {
-        "zh-CN": "B站推荐",
-        "en-US": "Bilibili Recommend"
-      },
-      "description": {
-        "zh-CN": "实时获取B站推荐视频，发现更多精彩内容",
-        "en-US": "Discover more exciting content"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 4,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 4,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/bilibili_rcmd",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_bilibili_rcmd.png",
-      "categories": [
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": [],
-      "socialLinks": [
-        {
-          "name": "github",
-          "link": "https://github.com/widget-js/hotspot"
-        }
-      ]
-    },
-    {
-      "name": "cn.widgetjs.widgets.hotspot.bilibili",
-      "title": {
-        "zh-CN": "bilibili热搜"
-      },
-      "description": {
-        "zh-CN": "看看年轻人在B站搜什么"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 3,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 6,
-      "minWidth": 4,
-      "minHeight": 3,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/bilibili",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/bilibili_hot_search.png",
-      "categories": [
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": [
-        {
-          "url": "/widget/bilibili",
-          "name": "index"
-        }
-      ],
-      "socialLinks": [
-        {
-          "name": "github",
-          "link": "https://github.com/widget-js/hotspot"
-        }
-      ]
-    },
-    {
-      "name": "cn.widgetjs.widgets.hotspot.bangumi",
-      "title": {
-        "zh-CN": "B站新番时间表"
-      },
-      "description": {
-        "zh-CN": "追番小助手"
-      },
-      "keywords": [
-        "recommend"
-      ],
-      "security": false,
-      "permissions": [],
-      "lang": "zh-CN",
-      "width": 4,
-      "height": 4,
-      "maxWidth": 6,
-      "webviewTag": false,
-      "maxHeight": 4,
-      "minWidth": 4,
-      "minHeight": 4,
-      "movable": true,
-      "singleton": false,
-      "resizable": true,
-      "path": "/widget/bangumi",
-      "meta": {},
-      "backgroundThrottling": true,
-      "previewImage": "/images/preview_bangumi.png",
-      "categories": [
-        "news"
-      ],
-      "supportDeployMode": 17,
-      "routes": [
-        {
-          "url": "/widget/bangumi",
-          "name": "index"
-        }
-      ],
-      "socialLinks": [
-        {
-          "name": "github",
-          "link": "https://github.com/widget-js/hotspot"
-        }
-      ]
     },
     {
       "name": "cn.example.widget.clock",
