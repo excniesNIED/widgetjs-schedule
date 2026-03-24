@@ -65,7 +65,7 @@ const fillStyle = computed(() => {
   min-width: 0;
   border-radius: var(--schedule-card-radius, 12px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 116px;
+  grid-template-columns: minmax(0, 1fr) 48px;
   align-items: center;
   gap: 12px;
   padding: var(--schedule-card-padding-y, 8px) var(--schedule-card-padding-x, 14px);
@@ -131,7 +131,7 @@ const fillStyle = computed(() => {
 .card-status {
   position: relative;
   z-index: 1;
-  width: 116px;
+  width: 48px;
   font-size: var(--schedule-meta-size, 0.5625rem);
   color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
   line-height: 1.2;

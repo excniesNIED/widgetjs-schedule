@@ -51,6 +51,7 @@ async function sendToastNotification(title: string, message: string, duration: n
     title,
     message,
     duration,
+    confirmButtonText: '知道了',
   })
 }
 
