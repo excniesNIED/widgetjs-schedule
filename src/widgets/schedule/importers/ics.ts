@@ -18,7 +18,6 @@ export function parseIcsEvents(content: string): ScheduleEventRecord[] {
       const event = new ICAL.Event(component)
       const summary = event.summary || component.getFirstPropertyValue('summary') || '未命名日程'
       const description = component.getFirstPropertyValue('description') || undefined
-      const location = component.getFirstPropertyValue('location') || undefined
       const rrule = component.getFirstPropertyValue('rrule')
       const alarmTrigger = component
         .getAllSubcomponents('valarm')
@@ -33,7 +32,6 @@ export function parseIcsEvents(content: string): ScheduleEventRecord[] {
         uid: event.uid,
         title: summary,
         description,
-        location,
         source: 'ics',
         timeMode: event.endDate ? 'range' : 'point',
         startAt: toIsoFromICAL(event.startDate),
@@ -54,7 +52,6 @@ export function parseIcsEvents(content: string): ScheduleEventRecord[] {
     const event = new ICAL.Event(component)
     const summary = event.summary || component.getFirstPropertyValue('summary') || '未命名日程'
     const description = component.getFirstPropertyValue('description') || undefined
-    const location = component.getFirstPropertyValue('location') || undefined
     const alarmTrigger = component
       .getAllSubcomponents('valarm')
       .map(item => item.getFirstPropertyValue('trigger'))
@@ -67,7 +64,6 @@ export function parseIcsEvents(content: string): ScheduleEventRecord[] {
       uid: event.uid,
       title: summary,
       description,
-      location,
       startAt: toIsoFromICAL(event.startDate),
       endAt: toIsoFromICAL(event.endDate),
       allDay: event.startDate?.isDate,

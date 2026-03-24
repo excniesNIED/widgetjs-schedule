@@ -14,7 +14,6 @@ export function exportEventsToCsv(events: ScheduleEventRecord[]) {
       weekdays: event.recurrenceWeekdays?.join(',') ?? '',
       weeks: event.recurrenceWeeks ?? '',
       description: event.description ?? '',
-      location: event.location ?? '',
       color: event.color ?? '',
     })),
     {
@@ -28,7 +27,6 @@ export function exportEventsToCsv(events: ScheduleEventRecord[]) {
         'weekdays',
         'weeks',
         'description',
-        'location',
         'color',
       ],
     },

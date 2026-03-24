@@ -33,10 +33,6 @@ export function exportEventsToIcs(events: ScheduleEventRecord[]) {
       lines.push(`DESCRIPTION:${escapeText(event.description)}`)
     }
 
-    if (event.location) {
-      lines.push(`LOCATION:${escapeText(event.location)}`)
-    }
-
     lines.push(`DTSTART:${toIcsDate(event.startAt)}`)
 
     if (event.endAt) {

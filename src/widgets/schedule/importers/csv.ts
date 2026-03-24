@@ -26,6 +26,11 @@ interface CsvRow {
   color?: string
 }
 
+function mergeDescription(description?: string, location?: string) {
+  const parts = [description?.trim(), location?.trim() ? `地点：${location.trim()}` : ''].filter(Boolean)
+  return parts.length > 0 ? parts.join(' · ') : undefined
+}
+
 function normalizeHeader(header: string) {
   return header
     .trim()
@@ -127,8 +132,7 @@ export function parseCsvEvents(csv: string): ScheduleImportResult {
       recurrenceInterval: Number(row.repeat_interval) > 0 ? Number(row.repeat_interval) : 1,
       recurrenceWeekdays: recurrenceWeekdays.length > 0 ? recurrenceWeekdays : undefined,
       recurrenceWeeks,
-      description: row.description?.trim() || undefined,
-      location: row.location?.trim() || undefined,
+      description: mergeDescription(row.description, row.location),
       color: row.color?.trim() || undefined,
     })
 
