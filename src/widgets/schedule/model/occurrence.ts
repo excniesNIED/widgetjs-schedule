@@ -1,4 +1,3 @@
-import { buildDefaultSettings } from './defaults'
 import { dayjs, toIsoString } from './date'
 import { formatOccurrenceTime, getRepeatLabel } from './format'
 import {
@@ -34,7 +33,6 @@ function buildOccurrence(
   startAt: string,
   endAt: string | undefined,
   now: string,
-  fallbackColors = buildDefaultSettings(),
 ): ScheduleOccurrence {
   const start = dayjs(startAt)
   const end = endAt ? dayjs(endAt) : start.add(POINT_EVENT_VISIBLE_MINUTES, 'minute')
@@ -48,7 +46,6 @@ function buildOccurrence(
     occurrenceKey: `${event.id}:${toIsoString(start)}`,
     title: event.title,
     description: event.description,
-    location: event.location,
     teacher: event.teacher,
     sectionText: event.sectionText,
     startAt: toIsoString(start),
@@ -59,8 +56,8 @@ function buildOccurrence(
     isPast,
     alarmOffsetMinutes: event.alarmOffsetMinutes,
     repeatLabel: getRepeatLabel(event),
-    colorToken: event.color ?? fallbackColors.cardColor,
-    progressColorToken: event.progressColor ?? fallbackColors.progressColor,
+    colorToken: event.color ?? '',
+    progressColorToken: event.progressColor ?? '',
     source: event.source,
   }
 }
@@ -70,13 +67,12 @@ function expandSingleEvent(
   rangeStart: string,
   rangeEnd: string,
   now: string,
-  fallbackColors: ReturnType<typeof buildDefaultSettings>,
 ) {
   if (!overlapsRange(event.startAt, event.endAt, rangeStart, rangeEnd)) {
     return []
   }
 
-  return [buildOccurrence(event, event.startAt, event.endAt, now, fallbackColors)]
+  return [buildOccurrence(event, event.startAt, event.endAt, now)]
 }
 
 function expandRecurringEvent(
@@ -84,11 +80,10 @@ function expandRecurringEvent(
   rangeStart: string,
   rangeEnd: string,
   now: string,
-  fallbackColors: ReturnType<typeof buildDefaultSettings>,
 ) {
   const rrule = buildRRule(event)
   if (!rrule) {
-    return expandSingleEvent(event, rangeStart, rangeEnd, now, fallbackColors)
+    return expandSingleEvent(event, rangeStart, rangeEnd, now)
   }
 
   const durationMs = event.endAt
@@ -128,7 +123,6 @@ function expandRecurringEvent(
         occurrenceStart,
         occurrenceEnd,
         now,
-        fallbackColors,
       )
     })
     .filter((item): item is ScheduleOccurrence => Boolean(item))
@@ -139,20 +133,14 @@ export function expandEventsInRange({
   rangeStart,
   rangeEnd,
   now,
-  settings,
 }: ExpandEventsRangeInput) {
-  const fallbackColors = {
-    ...buildDefaultSettings(),
-    ...settings,
-  }
-
   return events
     .flatMap((event) => {
       if (isRecurringEvent(event)) {
-        return expandRecurringEvent(event, rangeStart, rangeEnd, now, fallbackColors)
+        return expandRecurringEvent(event, rangeStart, rangeEnd, now)
       }
 
-      return expandSingleEvent(event, rangeStart, rangeEnd, now, fallbackColors)
+      return expandSingleEvent(event, rangeStart, rangeEnd, now)
     })
     .sort((left, right) => dayjs(left.startAt).valueOf() - dayjs(right.startAt).valueOf())
 }

@@ -3,7 +3,6 @@ import { normalizeWeeksExpression } from './recurrence'
 import type { ScheduleEventRecord } from './types'
 
 export interface ParsedIcsDescription {
-  location?: string
   teacher?: string
   weeks?: string
   sectionText?: string
@@ -14,7 +13,6 @@ export interface RawIcsEvent {
   uid?: string
   title: string
   description?: string
-  location?: string
   startAt: string
   endAt?: string
   allDay?: boolean
@@ -82,7 +80,6 @@ export function parseIcsDescription(raw?: string): ParsedIcsDescription {
     .map(item => item.trim())
     .filter(Boolean)
 
-  let location: string | undefined
   let teacher: string | undefined
   let weeks: string | undefined
   let sectionText: string | undefined
@@ -98,11 +95,6 @@ export function parseIcsDescription(raw?: string): ParsedIcsDescription {
 
     const key = rawKey.trim()
     const value = valueParts.join(':').trim()
-
-    if (/^地点$/.test(key)) {
-      location = value || undefined
-      continue
-    }
 
     if (/^教师$/.test(key)) {
       teacher = value || undefined
@@ -123,7 +115,6 @@ export function parseIcsDescription(raw?: string): ParsedIcsDescription {
   }
 
   const description = [
-    location ? `地点：${location}` : '',
     teacher ? `教师：${teacher}` : '',
     sectionText ? `节次：${sectionText}` : '',
     ...extras,
@@ -132,7 +123,6 @@ export function parseIcsDescription(raw?: string): ParsedIcsDescription {
     .join(' · ')
 
   return {
-    location,
     teacher,
     weeks,
     sectionText,
@@ -164,7 +154,6 @@ function buildSeriesKey(event: ParsedIcsSeriesItem) {
     toWeekdayNumber(event.startAt),
     toLocalTime(event.startAt),
     event.endAt ? toLocalTime(event.endAt) : '',
-    event.location?.trim() || '',
     event.teacher?.trim() || '',
     event.sectionText?.trim() || '',
     event.weeks?.trim() || '',
@@ -186,7 +175,6 @@ export function collapseIcsToCourseSeries(rawEvents: RawIcsEvent[]): Partial<Sch
     return {
       ...event,
       description: parsedDescription.description ?? event.description,
-      location: parsedDescription.location ?? event.location,
       teacher: parsedDescription.teacher,
       sectionText: parsedDescription.sectionText,
       weeks: parsedDescription.weeks,
@@ -212,7 +200,6 @@ export function collapseIcsToCourseSeries(rawEvents: RawIcsEvent[]): Partial<Sch
         uid: first.uid,
         title: first.title,
         description: first.description,
-        location: first.location,
         teacher: first.teacher,
         sectionText: first.sectionText,
         source: 'ics',
@@ -245,7 +232,6 @@ export function collapseIcsToCourseSeries(rawEvents: RawIcsEvent[]): Partial<Sch
       uid: first.uid ?? `${first.title}-${first.startAt}`,
       title: first.title,
       description: first.description,
-      location: first.location,
       teacher: first.teacher,
       sectionText: first.sectionText,
       source: 'ics',

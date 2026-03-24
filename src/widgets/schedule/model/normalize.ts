@@ -37,7 +37,6 @@ export function normalizeEventRecord(
     recurrenceRRule: input.recurrenceRRule?.trim() || undefined,
     exdates: input.exdates?.map(item => toIsoString(item)),
     description: input.description?.trim() || undefined,
-    location: input.location?.trim() || undefined,
     teacher: input.teacher?.trim() || undefined,
     sectionText: input.sectionText?.trim() || undefined,
     color: input.color ?? base.color,

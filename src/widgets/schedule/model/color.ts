@@ -1,4 +1,10 @@
-function parseHexColor(value: string) {
+interface RGB {
+  red: number
+  green: number
+  blue: number
+}
+
+function parseHexColor(value: string): RGB | undefined {
   const normalized = value.trim().replace('#', '')
   if (![3, 6].includes(normalized.length)) {
     return undefined
@@ -19,35 +25,31 @@ function parseHexColor(value: string) {
   return { red, green, blue }
 }
 
-function parseRgbColor(value: string) {
+function parseRgbColor(value: string): RGB | undefined {
   const match = value.match(/rgba?\(([^)]+)\)/i)
-  if (!match) {
+  if (!match?.[1]) {
     return undefined
   }
 
-  const [red, green, blue] = match[1]
-    .split(',')
-    .slice(0, 3)
-    .map(channel => Number.parseFloat(channel.trim()))
-
-  if ([red, green, blue].some(channel => Number.isNaN(channel))) {
+  const parts = match[1].split(',').map(channel => Number.parseFloat(channel.trim()))
+  if (parts.length < 3 || parts.some(channel => Number.isNaN(channel))) {
     return undefined
   }
 
-  return { red, green, blue }
+  return { red: parts[0] as number, green: parts[1] as number, blue: parts[2] as number }
 }
 
-function getRelativeLuminance(channel: number) {
+function getRelativeLuminance(channel: number): number {
   const normalized = channel / 255
   return normalized <= 0.03928
     ? normalized / 12.92
     : ((normalized + 0.055) / 1.055) ** 2.4
 }
 
-export function getReadableTextColor(background: string) {
+export function getReadableTextColor(background: string): string {
   const parsed = parseHexColor(background) ?? parseRgbColor(background)
   if (!parsed) {
-    return '#17313e'
+    return 'var(--widget-color)'
   }
 
   const luminance = 0.2126 * getRelativeLuminance(parsed.red)

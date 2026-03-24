@@ -27,7 +27,6 @@ export interface ScheduleEventRecord {
   uid?: string
   title: string
   description?: string
-  location?: string
   teacher?: string
   sectionText?: string
   source: ScheduleSource
@@ -55,7 +54,6 @@ export interface ScheduleOccurrence {
   occurrenceKey: string
   title: string
   description?: string
-  location?: string
   teacher?: string
   sectionText?: string
   startAt: string
@@ -71,19 +69,16 @@ export interface ScheduleOccurrence {
   source: ScheduleSource
 }
 
+export type ScheduleNotificationType = 'toast' | 'system'
+
 export interface ScheduleWidgetSettings {
-  defaultView: ScheduleViewMode
-  weekWindowMode: ScheduleWeekWindowMode
   listBackgroundMode: ScheduleListBackgroundMode
   showTimeline: boolean
   notifyOnAlarm: boolean
   notifyOnStart: boolean
   notifyOnEnd: boolean
-  cardColor: string
-  textColor: string
-  progressColor: string
-  ongoingColor: string
-  upcomingColor: string
+  notificationTypes: ScheduleNotificationType[]
+  toastDuration: number
 }
 
 export interface ExpandEventsRangeInput {
@@ -91,7 +86,6 @@ export interface ExpandEventsRangeInput {
   rangeStart: string
   rangeEnd: string
   now: string
-  settings: ScheduleWidgetSettings
 }
 
 export interface ScheduleSummary {
