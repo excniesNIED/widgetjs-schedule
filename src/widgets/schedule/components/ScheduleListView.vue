@@ -37,7 +37,9 @@ withDefaults(defineProps<{
   flex-direction: column;
   align-items: stretch;
   gap: var(--schedule-list-gap, 6px);
-  width: 100%;
+  width: 215px;
+  max-width: 215px;
+  margin-inline: auto;
   min-width: 0;
   min-height: 0;
 }
