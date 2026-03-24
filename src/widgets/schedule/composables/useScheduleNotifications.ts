@@ -1,6 +1,7 @@
 import { NotificationApi } from '@widget-js/core'
 import { onMounted, onUnmounted, type Ref } from 'vue'
 import { dayjs, nowIsoString, toIsoString, toLocalTime } from '../model/date'
+import { formatOccurrenceTime } from '../model/format'
 import { expandEventsInRange } from '../model/occurrence'
 import { buildNotificationCheckpoints, getRecommendedRefreshDelay } from '../model/refresh'
 import type {
@@ -45,6 +46,60 @@ async function sendSystemNotification(title: string, message: string) {
   }, 8000)
 }
 
+async function sendToastNotification(title: string, message: string, duration: number) {
+  await NotificationApi.reminder({
+    title,
+    message,
+    duration,
+    confirmButtonText: '知道了',
+  })
+}
+
+function buildDetailLines(occurrence: ScheduleOccurrence) {
+  return [
+    occurrence.description,
+    occurrence.teacher ? `教师：${occurrence.teacher}` : '',
+    occurrence.sectionText ? `节次：${occurrence.sectionText}` : '',
+    occurrence.repeatLabel && occurrence.repeatLabel !== '单次' ? `重复：${occurrence.repeatLabel}` : '',
+  ].filter(Boolean)
+}
+
+export function buildNotificationContent(kind: 'alarm' | 'start' | 'end', occurrence: ScheduleOccurrence) {
+  const timeLabel = formatOccurrenceTime(occurrence)
+  const detailLines = buildDetailLines(occurrence)
+
+  if (kind === 'alarm') {
+    return {
+      title: '日程提醒',
+      message: [
+        `提醒：${occurrence.title}`,
+        `时间：${timeLabel}`,
+        ...detailLines,
+      ].join('\n'),
+    }
+  }
+
+  if (kind === 'start') {
+    return {
+      title: '日程开始',
+      message: [
+        `开始：${occurrence.title}`,
+        `时间：${timeLabel}`,
+        ...detailLines,
+      ].join('\n'),
+    }
+  }
+
+  return {
+    title: '日程结束',
+    message: [
+      `结束：${occurrence.title}`,
+      `时间：${toLocalTime(occurrence.startAt)}`,
+      ...detailLines,
+    ].join('\n'),
+  }
+}
+
 export function useScheduleNotifications(
   events: Ref<ScheduleEventRecord[]>,
   settings: Ref<ScheduleWidgetSettings>,
@@ -54,18 +109,23 @@ export function useScheduleNotifications(
   let timer: number | undefined
 
   async function sendNotification(title: string, message: string) {
-    const attempts = await Promise.allSettled([
-      NotificationApi.reminder({
-        title,
-        message,
-        duration: 6000,
-        confirmButtonText: '知道了',
-      }),
-      sendSystemNotification(title, message),
-    ])
+    const { notificationTypes, toastDuration } = settings.value
+    const promises: Promise<void>[] = []
+    const types = notificationTypes ?? []
 
-    if (attempts.every(result => result.status === 'rejected')) {
-      console.error('Failed to send notification', attempts)
+    if (types.includes('toast')) {
+      promises.push(sendToastNotification(title, message, toastDuration))
+    }
+
+    if (types.includes('system')) {
+      promises.push(sendSystemNotification(title, message))
+    }
+
+    if (promises.length > 0) {
+      const results = await Promise.allSettled(promises)
+      if (results.every(result => result.status === 'rejected')) {
+        console.error('Failed to send notification', results)
+      }
     }
   }
 
@@ -75,32 +135,7 @@ export function useScheduleNotifications(
       rangeStart: toIsoString(dayjs(now.value).startOf('day')),
       rangeEnd: toIsoString(dayjs(now.value).endOf('day')),
       now: now.value,
-      settings: settings.value,
     })
-  }
-
-  function buildMessage(kind: 'alarm' | 'start' | 'end', occurrence: ScheduleOccurrence) {
-    const timeLabel = toLocalTime(occurrence.startAt)
-    const locationLabel = occurrence.location ? ` · ${occurrence.location}` : ''
-
-    if (kind === 'alarm') {
-      return {
-        title: '当前进展',
-        message: `提醒：${occurrence.title} 将于 ${timeLabel} 开始${locationLabel}`,
-      }
-    }
-
-    if (kind === 'start') {
-      return {
-        title: '当前进展',
-        message: `开始：${occurrence.title} · ${timeLabel}${locationLabel}`,
-      }
-    }
-
-    return {
-      title: '当前进展',
-      message: `结束：${occurrence.title} 已结束`,
-    }
   }
 
   async function checkNotifications(occurrences: ScheduleOccurrence[]) {
@@ -117,7 +152,7 @@ export function useScheduleNotifications(
         continue
       }
 
-      const payload = buildMessage(checkpoint.kind, checkpoint.occurrence)
+      const payload = buildNotificationContent(checkpoint.kind, checkpoint.occurrence)
       await sendNotification(payload.title, payload.message)
       notificationLog.value = {
         ...notificationLog.value,
