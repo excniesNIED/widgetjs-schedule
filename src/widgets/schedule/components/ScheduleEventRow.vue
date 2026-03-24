@@ -47,6 +47,7 @@ const fillStyle = computed(() => {
   >
     <div class="card-main">
       <strong class="card-title">{{ occurrence.title }}</strong>
+      <span v-if="occurrence.description" class="card-desc">{{ occurrence.description }}</span>
       <span class="card-time">{{ formatOccurrenceTime(occurrence) }}</span>
     </div>
     <span class="card-status">{{ statusText }}</span>
@@ -103,6 +104,15 @@ const fillStyle = computed(() => {
   color: var(--text-primary, var(--widget-color));
   font-size: var(--schedule-card-title-size, 0.75rem);
   font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-desc {
+  font-size: var(--schedule-meta-size, 0.5625rem);
+  color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;

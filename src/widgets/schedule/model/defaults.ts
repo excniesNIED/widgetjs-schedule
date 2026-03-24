@@ -45,7 +45,7 @@ export function buildDefaultSettings(): ScheduleWidgetSettings {
     notifyOnAlarm: true,
     notifyOnStart: true,
     notifyOnEnd: false,
-    notificationTypes: ['toast'],
+    notificationTypes: ['toast', 'system'],
     toastDuration: 5000,
   }
 }
