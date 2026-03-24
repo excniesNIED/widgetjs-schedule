@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { useWidget, WidgetConfigOption, WidgetEditDialog } from '@widget-js/vue3'
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import ScheduleManualEntryForm from './components/ScheduleManualEntryForm.vue'
 import { useScheduleImportExport } from './composables/useScheduleImportExport'
 import { ensureSystemNotificationPermission } from './composables/useScheduleNotifications'
 import { useScheduleStore } from './composables/useScheduleStore'
 import { dayjs } from './model/date'
-import { getDefaultScheduleColors } from './model/defaults'
-import type { ScheduleEventRecord, ScheduleWidgetSettings } from './model/types'
+import {
+  getToastDurationSeconds,
+  shouldShowToastDurationInput,
+  toToastDurationMilliseconds,
+} from './model/notification-settings'
+import type { ScheduleEventRecord, ScheduleNotificationType, ScheduleWidgetSettings } from './model/types'
 
 const { widgetParams, save } = useWidget()
-const activeTab = ref('theme')
+const activeTab = ref('schedule')
 const widgetConfigOption = new WidgetConfigOption({
   title: 'Schedule 设置',
   theme: {
@@ -37,11 +41,31 @@ const importError = ref('')
 const fileInput = ref<HTMLInputElement>()
 const editingEvent = ref<ScheduleEventRecord | null>(null)
 const editSectionRef = ref<HTMLElement>()
-const defaultPaletteHint = getDefaultScheduleColors()
-const useGlobalTheme = ref(true)
 
-async function handleNotificationSettingChange(key: 'notifyOnAlarm' | 'notifyOnStart' | 'notifyOnEnd') {
-  const value = settings.value[key]
+const showToastSettings = computed(() =>
+  shouldShowToastDurationInput(settings.value.notificationTypes ?? []),
+)
+
+const notificationTypeOptions: Array<{ label: string, value: ScheduleNotificationType }> = [
+  { label: 'Toast 弹窗', value: 'toast' },
+  { label: '系统通知', value: 'system' },
+]
+
+async function handleNotificationTypeChange(types: ScheduleNotificationType[]) {
+  updateSettings({ notificationTypes: types })
+
+  if (types.includes('system')) {
+    const permission = await ensureSystemNotificationPermission()
+    if (permission === 'denied') {
+      importError.value = '系统通知权限已被拒绝，请在系统设置中开启通知权限。'
+    }
+  }
+}
+
+async function handleNotificationSettingChange(
+  key: 'notifyOnAlarm' | 'notifyOnStart' | 'notifyOnEnd',
+  value: boolean,
+) {
   updateSettings({
     [key]: value,
   } as Partial<ScheduleWidgetSettings>)
@@ -50,10 +74,22 @@ async function handleNotificationSettingChange(key: 'notifyOnAlarm' | 'notifyOnS
     return
   }
 
-  const permission = await ensureSystemNotificationPermission()
-  if (permission === 'denied') {
-    importError.value = '系统通知权限已被拒绝，当前只能尝试走 Widget.js 应用内提醒。'
+  if (settings.value.notificationTypes?.includes('system')) {
+    const permission = await ensureSystemNotificationPermission()
+    if (permission === 'denied') {
+      importError.value = '系统通知权限已被拒绝，请在系统设置中开启通知权限。'
+    }
   }
+}
+
+function handleToastDurationChange(value: number | undefined) {
+  if (!value) {
+    return
+  }
+
+  updateSettings({
+    toastDuration: toToastDurationMilliseconds(value),
+  })
 }
 
 async function onFileSelected(event: Event) {
@@ -96,6 +132,7 @@ function handleEdit(event: ScheduleEventRecord) {
   editingEvent.value = { ...event }
   importError.value = ''
   importMessage.value = ''
+  activeTab.value = 'schedule'
   void nextTick(() => {
     editSectionRef.value?.scrollIntoView({
       behavior: 'smooth',
@@ -116,118 +153,64 @@ function handleEdit(event: ScheduleEventRecord) {
     <template #custom>
       <div class="config-scroll">
         <el-tabs v-model="activeTab" type="border-card" class="config-tabs">
-          <!-- 主题设置 Tab -->
-          <el-tab-pane label="主题设置" name="theme">
-            <div class="config-section">
-              <div class="sub-section">
-                <h3>组件设置</h3>
-                <div class="grid-8x8">
-                  <label class="grid-item">
-                    <span>默认视图</span>
-                    <el-input value="列表 / 周视图" disabled />
-                  </label>
-                  <label class="grid-item">
-                    <span>周视图范围</span>
-                    <el-input value="3 个日程 / 3 小时" disabled />
-                  </label>
-                  <label>
-                    <span>列表背景</span>
-                    <el-radio-group
-                      v-model="settings.listBackgroundMode"
-                      @change="updateSettings({ listBackgroundMode: settings.listBackgroundMode })"
-                    >
-                      <el-radio-button value="none">
-                        无
-                      </el-radio-button>
-                      <el-radio-button value="countdown">
-                        倒计时
-                      </el-radio-button>
-                      <el-radio-button value="progress">
-                        进度
-                      </el-radio-button>
-                    </el-radio-group>
-                  </label>
-                  <label class="switch">
-                    <span>显示时间线</span>
-                    <el-switch v-model="settings.showTimeline" disabled />
-                  </label>
-                  <label class="switch">
-                    <span>使用全局主题</span>
-                    <el-switch v-model="useGlobalTheme" disabled />
-                  </label>
-                </div>
-              </div>
-
-              <div class="sub-section">
-                <h3>颜色设置</h3>
-                <div class="grid-8x8">
-                  <label class="grid-item">
-                    <span>卡片颜色</span>
-                    <el-color-picker
-                      v-model="settings.cardColor"
-                      @change="updateSettings({ cardColor: settings.cardColor })"
-                    />
-                  </label>
-                  <label class="grid-item">
-                    <span>文字颜色</span>
-                    <el-color-picker
-                      v-model="settings.textColor"
-                      @change="updateSettings({ textColor: settings.textColor })"
-                    />
-                  </label>
-                  <label class="grid-item">
-                    <span>进度颜色</span>
-                    <el-color-picker
-                      v-model="settings.progressColor"
-                      @change="updateSettings({ progressColor: settings.progressColor })"
-                    />
-                  </label>
-                  <label class="grid-item">
-                    <span>进行中高亮</span>
-                    <el-color-picker
-                      v-model="settings.ongoingColor"
-                      @change="updateSettings({ ongoingColor: settings.ongoingColor })"
-                    />
-                  </label>
-                  <label class="grid-item">
-                    <span>即将开始高亮</span>
-                    <el-color-picker
-                      v-model="settings.upcomingColor"
-                      @change="updateSettings({ upcomingColor: settings.upcomingColor })"
-                    />
-                  </label>
-                </div>
-                <p class="message">
-                  当前默认主题色：卡片 {{ defaultPaletteHint.card }}，文字 {{ defaultPaletteHint.text }}。
-                </p>
-              </div>
-            </div>
-          </el-tab-pane>
-
           <!-- 通知设置 Tab -->
           <el-tab-pane label="通知设置" name="notifications">
             <div class="config-section">
               <div class="sub-section">
-                <div class="grid-8x8">
-                  <label class="grid-item switch">
-                    <span>提醒通知</span>
-                    <el-switch
-                      v-model="settings.notifyOnAlarm"
-                      @change="handleNotificationSettingChange('notifyOnAlarm')"
+                <h3>通知方式</h3>
+                <p class="hint">
+                  可同时选择多种通知方式
+                </p>
+                <div class="checkbox-group">
+                  <el-checkbox-group
+                    :model-value="settings.notificationTypes ?? []"
+                    @change="handleNotificationTypeChange"
+                  >
+                    <el-checkbox
+                      v-for="option in notificationTypeOptions"
+                      :key="option.value"
+                      :value="option.value"
+                      :label="option.label"
+                      border
+                    />
+                  </el-checkbox-group>
+                </div>
+                <div v-if="showToastSettings" class="toast-settings">
+                  <label class="setting-item">
+                    <span>显示时长 (秒)</span>
+                    <el-input-number
+                      :model-value="getToastDurationSeconds(settings.toastDuration)"
+                      :min="1"
+                      :max="10"
+                      :step="1"
+                      @change="handleToastDurationChange"
                     />
                   </label>
-                  <label class="grid-item switch">
-                    <span>开始通知</span>
+                </div>
+              </div>
+
+              <div class="sub-section">
+                <h3>通知触发条件</h3>
+                <div class="trigger-options">
+                  <label class="switch-item">
+                    <span>日程提醒</span>
                     <el-switch
-                      v-model="settings.notifyOnStart"
-                      @change="handleNotificationSettingChange('notifyOnStart')"
+                      :model-value="settings.notifyOnAlarm"
+                      @change="(val: boolean) => handleNotificationSettingChange('notifyOnAlarm', val)"
                     />
                   </label>
-                  <label class="grid-item switch">
-                    <span>结束通知</span>
+                  <label class="switch-item">
+                    <span>日程开始</span>
                     <el-switch
-                      v-model="settings.notifyOnEnd"
-                      @change="handleNotificationSettingChange('notifyOnEnd')"
+                      :model-value="settings.notifyOnStart"
+                      @change="(val: boolean) => handleNotificationSettingChange('notifyOnStart', val)"
+                    />
+                  </label>
+                  <label class="switch-item">
+                    <span>日程结束</span>
+                    <el-switch
+                      :model-value="settings.notifyOnEnd"
+                      @change="(val: boolean) => handleNotificationSettingChange('notifyOnEnd', val)"
                     />
                   </label>
                 </div>
@@ -238,11 +221,29 @@ function handleEdit(event: ScheduleEventRecord) {
           <!-- 日程设置 Tab -->
           <el-tab-pane label="日程设置" name="schedule">
             <div class="config-section">
+              <div class="sub-section">
+                <h3>列表背景模式</h3>
+                <div class="radio-group">
+                  <el-radio-group
+                    :model-value="settings.listBackgroundMode"
+                    @change="(val: string) => updateSettings({ listBackgroundMode: val as any })"
+                  >
+                    <el-radio-button value="none">
+                      无
+                    </el-radio-button>
+                    <el-radio-button value="countdown">
+                      倒计时
+                    </el-radio-button>
+                    <el-radio-button value="progress">
+                      进度
+                    </el-radio-button>
+                  </el-radio-group>
+                </div>
+              </div>
+
               <div ref="editSectionRef" class="sub-section">
-                <h3>手动添加与编辑</h3>
-                <strong class="sub-title">手动添加</strong>
+                <h3>{{ editingEvent ? '编辑日程' : '手动添加' }}</h3>
                 <ScheduleManualEntryForm
-                  :default-color="settings.cardColor"
                   :editing-event="editingEvent"
                   @submit="handleManualSubmit"
                   @cancel-edit="editingEvent = null"
@@ -360,16 +361,16 @@ function handleEdit(event: ScheduleEventRecord) {
 }
 
 .config-section {
-  padding: 0.6rem 0;
+  padding: 16px 0;
 }
 
 .sub-section {
   display: grid;
-  gap: 0.9rem;
+  gap: 16px;
 }
 
 .sub-section + .sub-section {
-  padding-top: 0.9rem;
+  padding-top: 16px;
   border-top: 1px solid #ebe6dc;
 }
 
@@ -380,57 +381,66 @@ function handleEdit(event: ScheduleEventRecord) {
   font-weight: 500;
 }
 
-.sub-title {
-  font-size: 0.92rem;
+.hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6c7b84;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+:deep(.el-checkbox.is-bordered) {
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.toast-settings {
+  padding-top: 8px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-item span {
+  font-size: 0.82rem;
+  color: #405160;
+}
+
+.trigger-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.switch-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.switch-item span {
+  font-size: 0.88rem;
   color: #243744;
 }
 
-/* 8x8 网格布局系统 */
-.grid-8x8 {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.6rem;
-}
-
-.grid-item {
+.radio-group {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.grid-item.span-2 {
-  grid-column: span 2;
-}
-
-.grid-item.span-3 {
-  grid-column: span 3;
-}
-
-.grid-item.span-4 {
-  grid-column: span 4;
-}
-
-/* 颜色选择器网格布局 */
-.grid-8x8 label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.38rem;
-}
-
-.grid-8x8 label span {
-  font-size: 0.82rem;
-  color: #405160;
-  white-space: nowrap;
-}
-
-.switch {
-  align-content: end;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .import-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 8px;
 }
 
 .message {
@@ -450,20 +460,17 @@ function handleEdit(event: ScheduleEventRecord) {
 .section-head {
   display: flex;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 8px;
   align-items: center;
 }
 
 .section-head h3 {
   margin: 0;
-  font-size: 0.95rem;
-  color: #243744;
-  font-weight: 500;
 }
 
 .saved-list {
   display: grid;
-  gap: 0.6rem;
+  gap: 8px;
   max-height: 20rem;
   overflow: auto;
 }
@@ -471,16 +478,16 @@ function handleEdit(event: ScheduleEventRecord) {
 .saved-item {
   display: flex;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 8px;
   align-items: center;
-  padding: 0.72rem 0.82rem;
-  border-radius: 0.5rem;
+  padding: 8px 16px;
+  border-radius: 8px;
   background: #f7f3ea;
 }
 
 .saved-item-content {
   display: grid;
-  gap: 0.2rem;
+  gap: 4px;
 }
 
 .saved-item-content strong {
@@ -496,25 +503,14 @@ function handleEdit(event: ScheduleEventRecord) {
 .saved-actions {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 4px;
 }
 
 :deep(.el-dialog__body) {
   overflow: hidden;
 }
 
-/* 响应式布局 */
 @media (max-width: 760px) {
-  .grid-8x8 {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .grid-item.span-2,
-  .grid-item.span-3,
-  .grid-item.span-4 {
-    grid-column: span 2;
-  }
-
   .section-head,
   .saved-item {
     flex-direction: column;
@@ -527,19 +523,9 @@ function handleEdit(event: ScheduleEventRecord) {
 }
 
 @media (max-width: 480px) {
-  .grid-8x8 {
-    grid-template-columns: 1fr;
-  }
-
-  .grid-item.span-2,
-  .grid-item.span-3,
-  .grid-item.span-4 {
-    grid-column: span 1;
-  }
-
   :deep(.el-tabs__item) {
     font-size: 0.8rem;
-    padding: 0 0.8rem;
+    padding: 0 8px;
   }
 }
 </style>
