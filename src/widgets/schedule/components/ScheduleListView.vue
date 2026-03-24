@@ -36,20 +36,17 @@ withDefaults(defineProps<{
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--schedule-list-gap, 24px);
+  gap: var(--schedule-list-gap, 6px);
   width: 100%;
-  max-width: 100%;
   min-width: 0;
-  margin-inline: auto;
-  padding-bottom: 2px;
-  overflow: clip;
+  min-height: 0;
 }
 
 .list-view.compact {
-  gap: var(--schedule-list-gap-compact, 16px);
+  gap: var(--schedule-list-gap-compact, 6px);
 }
 
 .list-view.large {
-  gap: var(--schedule-list-gap-large, 28px);
+  gap: var(--schedule-list-gap-large, 6px);
 }
 </style>

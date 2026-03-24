@@ -61,15 +61,14 @@ const fillStyle = computed(() => {
   overflow: hidden;
   width: 100%;
   max-width: 100%;
-  margin-inline: auto;
   min-width: 0;
-  border-radius: var(--schedule-card-radius, 20px);
+  border-radius: var(--schedule-card-radius, 12px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 116px;
   align-items: center;
   gap: 12px;
-  padding: var(--schedule-card-padding-y, 24px) var(--schedule-card-padding-x, 26px);
-  min-height: var(--schedule-card-height, 122px);
+  padding: var(--schedule-card-padding-y, 8px) var(--schedule-card-padding-x, 14px);
+  min-height: var(--schedule-card-height, 48px);
   box-sizing: border-box;
   background: var(--bg-card, color-mix(in srgb, var(--widget-background-color) 30%, transparent));
 }
@@ -77,11 +76,10 @@ const fillStyle = computed(() => {
 .schedule-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
+  inset: 0;
   width: min(100%, var(--progress-width, 0%));
   background: var(--progress-background, var(--bg-progress, color-mix(in srgb, var(--widget-color) 14%, transparent)));
+  border-radius: inherit;
   z-index: 0;
   transition: width 0.3s ease;
 }
@@ -97,13 +95,13 @@ const fillStyle = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--schedule-card-stack-gap, 12px);
+  gap: var(--schedule-card-stack-gap, 2px);
   min-width: 0;
 }
 
 .card-title {
   color: var(--text-primary, var(--widget-color));
-  font-size: var(--schedule-card-title-size, 1.9rem);
+  font-size: var(--schedule-card-title-size, 0.75rem);
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
@@ -112,7 +110,7 @@ const fillStyle = computed(() => {
 }
 
 .card-time {
-  font-size: var(--schedule-meta-size, 1rem);
+  font-size: var(--schedule-meta-size, 0.5625rem);
   color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
   line-height: 1.2;
   white-space: nowrap;
@@ -124,7 +122,7 @@ const fillStyle = computed(() => {
   position: relative;
   z-index: 1;
   width: 116px;
-  font-size: var(--schedule-meta-size, 1rem);
+  font-size: var(--schedule-meta-size, 0.5625rem);
   color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
   line-height: 1.2;
   white-space: nowrap;

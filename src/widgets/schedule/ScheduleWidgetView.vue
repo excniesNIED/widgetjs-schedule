@@ -102,6 +102,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ====== 唯一裁切边界 ====== */
 .widget-shell {
   --schedule-shell-radius: 32px;
   position: relative;
@@ -113,17 +114,18 @@ onUnmounted(() => {
   min-height: 0;
   box-sizing: border-box;
   border-radius: var(--schedule-shell-radius);
-  isolation: isolate;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .background-layer {
   position: absolute;
-  inset: 0;
+  inset: 0 0 0 8px;
   z-index: 0;
   border-radius: inherit;
 }
 
+/* ====== 布局容器（无 overflow，不阻断滚动链） ====== */
 .schedule-widget {
   --space-8: 8px;
   --space-12: 12px;
@@ -145,27 +147,25 @@ onUnmounted(() => {
   --schedule-list-gap-compact: 6px;
   --schedule-list-gap-large: 6px;
   --schedule-header-offset-x: 8px;
-  --schedule-header-title-size: 0.72rem;
+  --schedule-header-title-size: 0.825rem;
   --schedule-card-title-size: 0.75rem;
   --schedule-meta-size: 0.5625rem;
   position: relative;
   z-index: 1;
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
   box-sizing: border-box;
-  padding: var(--space-18) var(--space-18) 12px;
+  padding: var(--space-18) var(--space-18) 20px;
   border-radius: var(--schedule-shell-radius);
   color: var(--text-primary);
   user-select: none;
   -webkit-user-select: none;
-  overflow: hidden;
 }
 
+/* ====== 标题区（固定高度，不参与 flex 缩放） ====== */
 .schedule-header {
   position: relative;
   z-index: 2;
@@ -185,25 +185,25 @@ onUnmounted(() => {
   text-overflow: ellipsis;
 }
 
+/* ====== 内容区（弹性填充，无 overflow） ====== */
 .schedule-content {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
+  flex-direction: column;
   width: 100%;
   min-width: 0;
-  max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
+/* ====== 滚动区域 ====== */
 .list-container {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   min-width: 0;
-  max-width: 100%;
   box-sizing: border-box;
-  padding: 0 2px 14px;
+  padding: 0 0 28px;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
