@@ -51,7 +51,6 @@ async function sendToastNotification(title: string, message: string, duration: n
     title,
     message,
     duration,
-    confirmButtonText: '知道了',
   })
 }
 
@@ -118,6 +117,7 @@ export function useScheduleNotifications(
     }
 
     if (types.includes('system')) {
+      await ensureSystemNotificationPermission()
       promises.push(sendSystemNotification(title, message))
     }
 
@@ -148,7 +148,7 @@ export function useScheduleNotifications(
       }
 
       const diffSeconds = currentTime.diff(dayjs(checkpoint.timestamp), 'second')
-      if (diffSeconds < 0 || diffSeconds > 15) {
+      if (diffSeconds < 0 || diffSeconds > 30) {
         continue
       }
 
