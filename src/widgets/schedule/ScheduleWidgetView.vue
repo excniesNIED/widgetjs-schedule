@@ -2,14 +2,12 @@
 import { DeployMode } from '@widget-js/core'
 import { useWidget, WidgetBackground } from '@widget-js/vue3'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import ScheduleHeader from './components/ScheduleHeader.vue'
 import ScheduleListView from './components/ScheduleListView.vue'
 import { useScheduleNotifications } from './composables/useScheduleNotifications'
 import { useScheduleStore } from './composables/useScheduleStore'
 import { useScheduleView } from './composables/useScheduleView'
 import { nowIsoString } from './model/date'
 import { formatLongDateLabel } from './model/format'
-import { formatOccurrenceTime, getCurrentAndNextOccurrence } from './model/occurrence'
 import { getRecommendedRefreshDelay } from './model/refresh'
 
 const { size, widgetParams } = useWidget({
@@ -36,22 +34,11 @@ const {
 )
 
 const visibleTodayOccurrences = computed(() => todayActiveOccurrences.value ?? [])
-const todaySummary = computed(() => getCurrentAndNextOccurrence(visibleTodayOccurrences.value))
 const shouldKeepVisualsActive = computed(() =>
   settings.value.listBackgroundMode !== 'none'
-  && visibleTodayOccurrences.value.length > 0,
+  && todayActiveOccurrences.value.some(item => item.isOngoing),
 )
-const headerStatusText = computed(() => {
-  if (todaySummary.value.current) {
-    return `进行中 · ${todaySummary.value.current.title} · ${formatOccurrenceTime(todaySummary.value.current)}`
-  }
 
-  if (todaySummary.value.next) {
-    return `接下来 · ${formatOccurrenceTime(todaySummary.value.next)} · ${todaySummary.value.next.title}`
-  }
-
-  return ''
-})
 const wrapperComponent = computed(() =>
   widgetParams.mode === DeployMode.OVERLAP ? 'OverlapWidgetWrapper' : 'DesktopWidgetWrapper',
 )
@@ -94,21 +81,21 @@ onUnmounted(() => {
     <div class="widget-shell">
       <WidgetBackground class="background-layer" />
       <section class="schedule-widget" :class="density">
-        <div class="content-panel">
-          <ScheduleHeader
-            :date-label="formatLongDateLabel(now)"
-            :status-text="headerStatusText"
-          />
-
-          <main class="content">
+        <header class="schedule-header">
+          <h1 class="date-title">
+            {{ formatLongDateLabel(now) }}
+          </h1>
+        </header>
+        <main class="schedule-content">
+          <div class="list-container">
             <ScheduleListView
               :occurrences="visibleTodayOccurrences"
               :now="now"
               :background-mode="settings.listBackgroundMode"
               :density="density"
             />
-          </main>
-        </div>
+          </div>
+        </main>
       </section>
     </div>
   </component>
@@ -116,66 +103,125 @@ onUnmounted(() => {
 
 <style scoped>
 .widget-shell {
+  --schedule-shell-radius: 32px;
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  border-radius: var(--schedule-shell-radius);
+  isolation: isolate;
   overflow: hidden;
-  border-radius: inherit;
 }
 
 .background-layer {
   position: absolute;
   inset: 0;
   z-index: 0;
+  border-radius: inherit;
 }
 
 .schedule-widget {
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-18: 18px;
+  --bg-surface: color-mix(in srgb, var(--widget-background-color) 14%, transparent);
+  --bg-card: color-mix(in srgb, var(--widget-background-color) 30%, transparent);
+  --bg-card-active: color-mix(in srgb, var(--widget-background-color) 36%, transparent);
+  --bg-progress: color-mix(in srgb, #74d7a7 36%, transparent);
+  --bg-countdown: color-mix(in srgb, #ffd36e 34%, transparent);
+  --text-primary: var(--widget-color);
+  --text-secondary: color-mix(in srgb, var(--widget-color) 82%, transparent);
+  --schedule-card-radius: 12px;
+  --schedule-card-height: 48px;
+  --schedule-card-padding-x: 14px;
+  --schedule-card-padding-y: 8px;
+  --schedule-card-stack-gap: 2px;
+  --schedule-list-gap: 6px;
+  --schedule-list-gap-compact: 6px;
+  --schedule-list-gap-large: 6px;
+  --schedule-header-offset-x: 8px;
+  --schedule-header-title-size: 0.72rem;
+  --schedule-card-title-size: 0.75rem;
+  --schedule-meta-size: 0.5625rem;
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
-  display: grid;
-  place-items: stretch;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
   box-sizing: border-box;
-  padding: 16px;
-  color: var(--widget-color);
+  padding: var(--space-18) var(--space-18) 12px;
+  border-radius: var(--schedule-shell-radius);
+  color: var(--text-primary);
   user-select: none;
   -webkit-user-select: none;
   overflow: hidden;
 }
 
-.content-panel {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
+.schedule-header {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  padding-inline-start: var(--schedule-header-offset-x);
+}
+
+.date-title {
+  margin: 0;
+  font-size: var(--schedule-header-title-size);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-content {
+  flex: 1 1 auto;
   min-height: 0;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 16px;
-  padding: 16px;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--widget-background-color) 92%, rgba(255,255,255,0.06));
-  border: 1px solid color-mix(in srgb, var(--widget-color) 10%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
   overflow: hidden;
 }
 
-.content {
+.list-container {
+  flex: 1 1 auto;
   min-height: 0;
   width: 100%;
-  overflow: auto;
-  overflow-x: hidden;
-  padding-right: 0;
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+  padding: 0 2px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.compact .content-panel {
-  padding: 8px;
-  gap: 8px;
+.list-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
-.large .content-panel {
-  padding: 24px;
+.compact {
+  --schedule-header-offset-x: 8px;
+}
+
+.large {
+  --schedule-header-offset-x: 8px;
 }
 </style>
