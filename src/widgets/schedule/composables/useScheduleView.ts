@@ -26,7 +26,6 @@ export function useScheduleView(
       rangeStart: todayRange.value.start,
       rangeEnd: todayRange.value.end,
       now: now.value,
-      settings: settings.value,
     }),
   )
 

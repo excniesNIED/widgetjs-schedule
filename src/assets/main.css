@@ -1,7 +1,16 @@
+html,
 body {
+  height: 100%;
   margin: 0;
   font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: transparent;
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
 }
 
 * {
