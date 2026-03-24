@@ -28,31 +28,28 @@ withDefaults(defineProps<{
     v-else
     title="今天暂无日程"
     description="去添加或导入日程。"
-    compact
   />
 </template>
 
 <style scoped>
 .list-view {
-  display: grid;
-  gap: 0.5rem;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--schedule-list-gap, 24px);
   width: 100%;
+  max-width: 100%;
   min-width: 0;
+  margin-inline: auto;
+  padding-bottom: 2px;
+  overflow: clip;
 }
 
 .list-view.compact {
-  gap: 0.38rem;
+  gap: var(--schedule-list-gap-compact, 16px);
 }
 
 .list-view.large {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-content: start;
-}
-
-@media (max-width: 920px) {
-  .list-view.large {
-    grid-template-columns: 1fr;
-  }
+  gap: var(--schedule-list-gap-large, 28px);
 }
 </style>

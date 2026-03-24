@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { dayjs } from '../model/date'
-import {
-  formatOccurrenceTime,
-  formatRelativeCountdown,
-} from '../model/format'
-import { getReadableTextColor } from '../model/color'
+import { formatOccurrenceTime } from '../model/format'
+import { getOccurrenceFillRatio, getOccurrenceStatusText } from '../model/list'
 import type {
   ScheduleListBackgroundMode,
   ScheduleOccurrence,
@@ -17,163 +13,134 @@ const props = defineProps<{
   backgroundMode: ScheduleListBackgroundMode
 }>()
 
-const progress = computed(() => {
-  if (props.backgroundMode === 'none') {
-    return 0
+const fillRatio = computed(() => getOccurrenceFillRatio(
+  props.occurrence,
+  props.now,
+  props.backgroundMode,
+))
+
+const statusText = computed(() => getOccurrenceStatusText(
+  props.occurrence,
+  props.now,
+  props.backgroundMode,
+))
+
+const fillStyle = computed(() => {
+  const baseColor = props.occurrence.progressColorToken || 'var(--bg-progress)'
+  return {
+    '--progress-width': `${fillRatio.value * 100}%`,
+    '--progress-background': baseColor,
   }
-
-  const current = dayjs(props.now)
-  const start = dayjs(props.occurrence.startAt)
-
-  if (props.backgroundMode === 'countdown' && props.occurrence.isUpcoming) {
-    const dayStart = start.startOf('day')
-    const total = Math.max(start.diff(dayStart, 'millisecond'), 1)
-    const elapsed = Math.max(current.diff(dayStart, 'millisecond'), 0)
-    return Math.min(Math.max(elapsed / total, 0), 1)
-  }
-
-  if (
-    props.backgroundMode === 'progress'
-    && props.occurrence.endAt
-    && props.occurrence.isOngoing
-  ) {
-    const end = dayjs(props.occurrence.endAt)
-    const total = Math.max(end.diff(start, 'millisecond'), 1)
-    const elapsed = Math.max(current.diff(start, 'millisecond'), 0)
-    return Math.min(Math.max(elapsed / total, 0), 1)
-  }
-
-  return 0
 })
-
-const statusText = computed(() => {
-  if (props.occurrence.isOngoing) {
-    return '进行中'
-  }
-
-  if (props.occurrence.isUpcoming) {
-    return formatRelativeCountdown(props.occurrence.startAt, props.now)
-  }
-
-  return '已结束'
-})
-
-const metaText = computed(() =>
-  props.occurrence.description || props.occurrence.location || '',
-)
-const textColor = computed(() => getReadableTextColor(props.occurrence.colorToken))
-const cardBackground = computed(() => props.occurrence.colorToken)
 </script>
 
 <template>
   <article
-    class="event-row"
+    class="schedule-card"
     :class="{
       ongoing: occurrence.isOngoing,
       upcoming: occurrence.isUpcoming,
       past: occurrence.isPast,
+      'countdown-mode': backgroundMode === 'countdown',
     }"
-    :style="{
-      background: cardBackground,
-      '--event-text-color': textColor,
-    }"
+    :style="fillStyle"
   >
-    <div
-      class="fill"
-      :style="{
-        width: `${progress * 100}%`,
-        background: occurrence.progressColorToken,
-      }"
-    />
-    <div class="content">
-      <div class="time-line">
-        <strong>{{ formatOccurrenceTime(occurrence) }}</strong>
-        <span>{{ statusText }}</span>
-      </div>
-      <div class="title-line">
-        <strong>{{ occurrence.title }}</strong>
-        <span>{{ occurrence.repeatLabel }}</span>
-      </div>
-      <p v-if="metaText">
-        {{ metaText }}
-      </p>
+    <div class="card-main">
+      <strong class="card-title">{{ occurrence.title }}</strong>
+      <span class="card-time">{{ formatOccurrenceTime(occurrence) }}</span>
     </div>
+    <span class="card-status">{{ statusText }}</span>
   </article>
 </template>
 
 <style scoped>
-.event-row {
+.schedule-card {
   position: relative;
-  overflow: hidden;
+  z-index: 1;
   isolation: isolate;
+  overflow: hidden;
   width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
   min-width: 0;
+  border-radius: var(--schedule-card-radius, 20px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 116px;
+  align-items: center;
+  gap: 12px;
+  padding: var(--schedule-card-padding-y, 24px) var(--schedule-card-padding-x, 26px);
+  min-height: var(--schedule-card-height, 122px);
   box-sizing: border-box;
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--widget-color) 12%, transparent);
-  box-shadow: 0 12px 24px -18px color-mix(in srgb, #000 40%, transparent);
-  contain: layout paint;
+  background: var(--bg-card, color-mix(in srgb, var(--widget-background-color) 30%, transparent));
 }
 
-.fill {
+.schedule-card::before {
+  content: '';
   position: absolute;
-  inset: 0 auto 0 0;
-  opacity: 0.12;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: min(100%, var(--progress-width, 0%));
+  background: var(--progress-background, var(--bg-progress, color-mix(in srgb, var(--widget-color) 14%, transparent)));
+  z-index: 0;
   transition: width 0.3s ease;
 }
 
-.content {
+.countdown-mode::before {
+  left: auto;
+  right: 0;
+}
+
+.card-main {
   position: relative;
   z-index: 1;
-  display: grid;
-  gap: 0.28rem;
-  padding: 0.62rem 0.68rem;
-}
-
-.time-line,
-.title-line {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.time-line strong,
-.title-line strong {
-  color: var(--event-text-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--schedule-card-stack-gap, 12px);
   min-width: 0;
 }
 
-.time-line span,
-.title-line span,
-p {
-  margin: 0;
-  font-size: 0.68rem;
-  color: color-mix(in srgb, var(--event-text-color) 72%, transparent);
-}
-
-.title-line span {
-  text-align: right;
+.card-title {
+  color: var(--text-primary, var(--widget-color));
+  font-size: var(--schedule-card-title-size, 1.9rem);
+  font-weight: 500;
+  line-height: 1.2;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.title-line strong {
-  font-size: 0.8rem;
-  line-height: 1.28;
-  word-break: break-word;
+.card-time {
+  font-size: var(--schedule-meta-size, 1rem);
+  color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-p {
-  line-height: 1.38;
-  word-break: break-word;
+.card-status {
+  position: relative;
+  z-index: 1;
+  width: 116px;
+  font-size: var(--schedule-meta-size, 1rem);
+  color: var(--text-secondary, color-mix(in srgb, var(--widget-color) 80%, transparent));
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: right;
+  justify-self: end;
 }
 
 .ongoing {
-  border-color: color-mix(in srgb, var(--widget-color) 24%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--widget-color) 8%, transparent);
+  background: var(--bg-card-active, color-mix(in srgb, var(--widget-background-color) 40%, transparent));
+}
+
+.schedule-card.countdown-mode {
+  --progress-background: var(--bg-countdown, color-mix(in srgb, #ffd36e 34%, transparent));
 }
 
 .past {
-  opacity: 0.72;
+  opacity: 0.6;
 }
 </style>
