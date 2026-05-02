@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,6 +22,16 @@ jobs:
         run: |
           npm install
           npm run build
+      - name: Setup GitHub Pages
+        run: |
+          curl -s -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow","source":{"branch":"master","path":"/"}}' \
+            && echo "::notice::GitHub Pages enabled successfully" \
+            || echo "::notice::GitHub Pages may already be enabled, continuing..."
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
