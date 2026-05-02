@@ -2,7 +2,7 @@
   "name": "widgetjs-schedule",
   "version": "1.0.0",
   "private": true,
-  "description": "A schedule widget plugin for Widget.js",
+  "description": "日程管理桌面组件 - 支持课程表、待办与多格式导入导出",
   "author": "excnies",
   "license": "MIT",
   "type": "module",

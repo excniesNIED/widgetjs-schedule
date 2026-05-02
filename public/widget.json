@@ -4,10 +4,12 @@
   "author": "excnies",
   "homepage": "",
   "title": {
-    "zh-CN": "Schedule"
+    "zh-CN": "日程管理",
+    "en-US": "Schedule"
   },
   "description": {
-    "zh-CN": "支持课程表、待办与多格式导入导出的日程组件"
+    "zh-CN": "支持课程表、待办与多格式导入导出的日程管理组件",
+    "en-US": "Schedule management widget with course schedules, todos, and multi-format import/export"
   },
   "entry": "/",
   "remote": {
@@ -20,10 +22,12 @@
     {
       "name": "cn.excnies.widget.schedule",
       "title": {
-        "zh-CN": "Schedule"
+        "zh-CN": "日程管理",
+        "en-US": "Schedule"
       },
       "description": {
-        "zh-CN": "支持今日列表、周视图和多格式导入导出的日程组件"
+        "zh-CN": "支持今日列表、周视图和多格式导入导出的日程管理组件",
+        "en-US": "Schedule management with today list, week view, and multi-format import/export"
       },
       "keywords": [
         "recommend"
