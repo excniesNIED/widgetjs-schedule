@@ -1,6 +1,6 @@
 {
   "name": "cn.excnies.widget.schedule",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "excnies",
   "homepage": "",
   "title": {
@@ -11,9 +11,8 @@
   },
   "entry": "/",
   "remote": {
-    "base": "/",
-    "hostname": "localhost",
-    "hash": true
+    "base": "/widgetjs-schedule",
+    "hostname": "excniesnied.github.io"
   },
   "hash": true,
   "url": "",
