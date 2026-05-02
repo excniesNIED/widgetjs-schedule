@@ -1,0 +1,56 @@
+{
+  "name": "cn.excnies.widget.schedule",
+  "version": "1.0.0",
+  "author": "excnies",
+  "homepage": "",
+  "title": {
+    "zh-CN": "日程管理",
+    "en-US": "Schedule"
+  },
+  "description": {
+    "zh-CN": "支持课程表、待办与多格式导入导出的日程管理组件",
+    "en-US": "Schedule management widget with course schedules, todos, and multi-format import/export"
+  },
+  "entry": "/",
+  "remote": {
+    "base": "/widgetjs-schedule",
+    "hostname": "excniesnied.github.io"
+  },
+  "hash": true,
+  "url": "",
+  "widgets": [
+    {
+      "name": "cn.excnies.widget.schedule",
+      "title": {
+        "zh-CN": "Schedule"
+      },
+      "description": {
+        "zh-CN": "支持今日列表、周视图和多格式导入导出的日程组件"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 4,
+      "maxWidth": 8,
+      "webviewTag": false,
+      "maxHeight": 8,
+      "minWidth": 4,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/schedule",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/preview_schedule.svg",
+      "supportDeployMode": 17,
+      "configPagePath": "/widget/config/schedule?frame=true&transparent=false&width=760&height=720",
+      "routes": []
+    }
+  ],
+  "pages": []
+}
