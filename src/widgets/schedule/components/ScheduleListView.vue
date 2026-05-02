@@ -26,11 +26,12 @@ withDefaults(defineProps<{
       :point-event-duration-minutes="pointEventDurationMinutes"
     />
   </div>
-  <ScheduleEmptyState
-    v-else
-    title="今天暂无日程"
-    description="去添加或导入日程。"
-  />
+  <div v-else class="list-view list-view--empty">
+    <ScheduleEmptyState
+      title="今天暂无日程"
+      description="去添加或导入日程。"
+    />
+  </div>
 </template>
 
 <style scoped>
@@ -52,5 +53,11 @@ withDefaults(defineProps<{
 
 .list-view.large {
   gap: var(--schedule-list-gap-large, 6px);
+}
+
+.list-view--empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 </style>
