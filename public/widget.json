@@ -22,12 +22,10 @@
     {
       "name": "cn.excnies.widget.schedule",
       "title": {
-        "zh-CN": "日程管理",
-        "en-US": "Schedule"
+        "zh-CN": "Schedule"
       },
       "description": {
-        "zh-CN": "支持今日列表、周视图和多格式导入导出的日程管理组件",
-        "en-US": "Schedule management with today list, week view, and multi-format import/export"
+        "zh-CN": "支持今日列表、周视图和多格式导入导出的日程组件"
       },
       "keywords": [
         "recommend"

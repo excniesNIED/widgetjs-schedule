@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { DeployMode } from '@widget-js/core'
-import { useWidget, WidgetBackground } from '@widget-js/vue3'
+import { useWidget, WidgetWrapper } from '@widget-js/vue3'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import ScheduleListView from './components/ScheduleListView.vue'
 import { useScheduleNotifications } from './composables/useScheduleNotifications'
@@ -39,10 +38,6 @@ const shouldKeepVisualsActive = computed(() =>
   && todayActiveOccurrences.value.some(item => item.isOngoing),
 )
 
-const wrapperComponent = computed(() =>
-  widgetParams.mode === DeployMode.OVERLAP ? 'OverlapWidgetWrapper' : 'DesktopWidgetWrapper',
-)
-
 const refreshCheckpoints = computed(() =>
   visibleTodayOccurrences.value.flatMap(occurrence => [
     occurrence.startAt,
@@ -77,9 +72,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <component :is="wrapperComponent">
+  <WidgetWrapper>
     <div class="widget-shell">
-      <WidgetBackground class="background-layer" />
       <section class="schedule-widget" :class="density">
         <header class="schedule-header">
           <h1 class="date-title">
@@ -99,7 +93,7 @@ onUnmounted(() => {
         </main>
       </section>
     </div>
-  </component>
+  </WidgetWrapper>
 </template>
 
 <style scoped>
@@ -117,13 +111,6 @@ onUnmounted(() => {
   border-radius: var(--schedule-shell-radius);
   overflow: hidden;
   isolation: isolate;
-}
-
-.background-layer {
-  position: absolute;
-  inset: 0 0 0 8px;
-  z-index: 0;
-  border-radius: inherit;
 }
 
 /* ====== 布局容器（无 overflow，不阻断滚动链） ====== */
